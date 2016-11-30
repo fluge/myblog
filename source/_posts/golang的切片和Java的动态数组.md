@@ -104,7 +104,7 @@ ArrayList是实现List接口的动态数组，每个ArrayList实例都有一个�
 ```
 从上面的ArrayList的源码就可以知道,整个ArrayList的动态实现就是在增加数据的时候判断数组的容量是否足够,不够就重新生成一个1.5倍的数组,然后进行复制。这就是整个ArrayList的核心。
 ### golang里面的动态数组---slice
-在Go中的数组和Java
+在Go中的数组和Java有点不一样。在golang中数组是内置类型
 ```go
 
 ```
