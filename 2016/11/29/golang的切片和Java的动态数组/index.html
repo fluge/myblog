@@ -1,0 +1,612 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="golang,Java," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="Java里的动态数组—ArrayListArrayList是实现List接口的动态数组，每个ArrayList实例都有一个容量，该容量是指用来存储列表元素的数组的大小。随着向ArrayList中不断添加元素，容量会自动增长，自动增长会带来数据向新数组的重新拷贝。同时需要注意的是这个实现不是同步的。如果多个线程同时访问一个ArrayList实例，而其中至少一个线程从结构上修改了列表，那么它必须保持外">
+<meta property="og:type" content="article">
+<meta property="og:title" content="golang的切片和Java的动态数组">
+<meta property="og:url" content="http://yoursite.com/2016/11/29/golang的切片和Java的动态数组/index.html">
+<meta property="og:site_name" content="Fluge">
+<meta property="og:description" content="Java里的动态数组—ArrayListArrayList是实现List接口的动态数组，每个ArrayList实例都有一个容量，该容量是指用来存储列表元素的数组的大小。随着向ArrayList中不断添加元素，容量会自动增长，自动增长会带来数据向新数组的重新拷贝。同时需要注意的是这个实现不是同步的。如果多个线程同时访问一个ArrayList实例，而其中至少一个线程从结构上修改了列表，那么它必须保持外">
+<meta property="og:image" content="http://ofa8x9gy9.bkt.clouddn.com/golang%E6%95%B0%E7%BB%84.png">
+<meta property="og:image" content="http://ofa8x9gy9.bkt.clouddn.com/slice.png">
+<meta property="og:updated_time" content="2016-11-30T15:49:51.694Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="golang的切片和Java的动态数组">
+<meta name="twitter:description" content="Java里的动态数组—ArrayListArrayList是实现List接口的动态数组，每个ArrayList实例都有一个容量，该容量是指用来存储列表元素的数组的大小。随着向ArrayList中不断添加元素，容量会自动增长，自动增长会带来数据向新数组的重新拷贝。同时需要注意的是这个实现不是同步的。如果多个线程同时访问一个ArrayList实例，而其中至少一个线程从结构上修改了列表，那么它必须保持外">
+<meta name="twitter:image" content="http://ofa8x9gy9.bkt.clouddn.com/golang%E6%95%B0%E7%BB%84.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"hide"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> golang的切片和Java的动态数组 | Fluge </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Fluge</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                golang的切片和Java的动态数组
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-11-29T17:44:44+08:00" content="2016-11-29">
+              2016-11-29
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Java和golang/" itemprop="url" rel="index">
+                    <span itemprop="name">Java和golang</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="Java里的动态数组—ArrayList"><a href="#Java里的动态数组—ArrayList" class="headerlink" title="Java里的动态数组—ArrayList"></a>Java里的动态数组—ArrayList</h3><p>ArrayList是实现List接口的动态数组，每个ArrayList实例都有一个容量，该容量是指用来存储列表元素的数组的大小。随着向ArrayList中不断添加元素，容量会自动增长，自动增长会带来数据向新数组的<em>重新拷贝</em>。同时需要注意的是这个实现不是同步的。如果多个线程同时访问一个ArrayList实例，而其中至少一个线程从结构上修改了列表，那么它必须保持外部同步。(结构上的修改是指任何添加或删除一个或多个元素的的操作，或者显示调整底层数组的大小；仅仅设置元素的值不是结构上的修改)<br><a id="more"></a></p>
+<h5 id="Java里面的初始化和实现"><a href="#Java里面的初始化和实现" class="headerlink" title="Java里面的初始化和实现"></a>Java里面的初始化和实现</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line">   <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ArrayList</span>&lt;<span class="title">E</span>&gt;   <span class="keyword">extends</span> 	 <span class="title">AbstractList</span>&lt;<span class="title">E</span>&gt;  <span class="keyword">implements</span>   <span class="title">List</span>&lt;<span class="title">E</span>&gt;, <span class="title">RandomAccess</span>, <span class="title">Cloneable</span>, <span class="title">java</span>.<span class="title">io</span>.<span class="title">Serializable</span></span>&#123;</div><div class="line"> 	</div><div class="line">     <span class="comment">//设置arrayList默认容量</span></div><div class="line">     <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> DEFAULT_CAPACITY = <span class="number">10</span>;</div><div class="line"> </div><div class="line">     <span class="comment">//空数组，当调用无参数构造函数的时候默认给个空数组</span></div><div class="line">     <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Object[] EMPTY_ELEMENTDATA = &#123;&#125;;</div><div class="line"> </div><div class="line">     <span class="comment">//这才是真正保存数据的数组</span></div><div class="line">     <span class="keyword">private</span> <span class="keyword">transient</span> Object[] elementData;</div><div class="line"> </div><div class="line">     <span class="comment">//arrayList的实际元素数量</span></div><div class="line">     <span class="keyword">private</span> <span class="keyword">int</span> size;</div><div class="line"> </div><div class="line">     <span class="comment">//构造方法传入默认的capacity 设置默认数组大小</span></div><div class="line">     <span class="function"><span class="keyword">public</span> <span class="title">ArrayList</span><span class="params">(<span class="keyword">int</span> initialCapacity)</span> </span>&#123;</div><div class="line">         <span class="keyword">super</span>();</div><div class="line">         <span class="keyword">if</span> (initialCapacity &lt; <span class="number">0</span>)</div><div class="line">             <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Illegal Capacity: "</span>+ initialCapacity);</div><div class="line">         <span class="keyword">this</span>.elementData = <span class="keyword">new</span> Object[initialCapacity];</div><div class="line">     &#125;</div><div class="line"> </div><div class="line">     <span class="comment">//无参数构造方法默认为空数组</span></div><div class="line">     <span class="function"><span class="keyword">public</span> <span class="title">ArrayList</span><span class="params">()</span> </span>&#123;</div><div class="line">         <span class="keyword">super</span>();</div><div class="line">         <span class="keyword">this</span>.elementData = EMPTY_ELEMENTDATA;</div><div class="line">     &#125;</div><div class="line"> </div><div class="line">     <span class="comment">//构造方法传入一个Collection， 则将Collection里面的值copy到arrayList</span></div><div class="line">     <span class="function"><span class="keyword">public</span> <span class="title">ArrayList</span><span class="params">(Collection&lt;? extends E&gt; c)</span> </span>&#123;</div><div class="line">         elementData = c.toArray();</div><div class="line">         size = elementData.length;</div><div class="line">         <span class="keyword">if</span> (elementData.getClass() != Object[].class)</div><div class="line">             elementData = Arrays.copyOf(elementData, size, Object[].class);</div><div class="line">     &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>从上面的源码可以看出来，ArrayList的本质就是数组的，其中的add,get,set,remove等操作都是对数组的操作，所以ArrayList的特性基本都是源于数组:有序、元素可以重复、插入慢、获取快等特性。</p>
+<h5 id="ArrayList里面的将数组动态扩容实现add和remove"><a href="#ArrayList里面的将数组动态扩容实现add和remove" class="headerlink" title="ArrayList里面的将数组动态扩容实现add和remove"></a>ArrayList里面的将数组动态扩容实现add和remove</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div></pre></td><td class="code"><pre><div class="line">   <span class="comment">//在末尾增加元素，虽然有时需要扩容但是时间复杂度为O(1)</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">add</span><span class="params">(E e)</span> </span>&#123;</div><div class="line">        ensureCapacityInternal(size + <span class="number">1</span>);  <span class="comment">// Increments modCount!!</span></div><div class="line">        elementData[size++] = e;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="comment">//在数组中间增加元素，因为需要移动后面的元素，所以时间复杂度为O(n)</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> index, E element)</span> </span>&#123;</div><div class="line">        rangeCheckForAdd(index);</div><div class="line"></div><div class="line">        ensureCapacityInternal(size + <span class="number">1</span>);  <span class="comment">// Increments modCount!!</span></div><div class="line">        System.arraycopy(elementData, index, elementData, index + <span class="number">1</span>,</div><div class="line">                         size - index);</div><div class="line">        elementData[index] = element;</div><div class="line">    &#125; </div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">ensureCapacityInternal</span><span class="params">(<span class="keyword">int</span> minCapacity)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (elementData == EMPTY_ELEMENTDATA) &#123;</div><div class="line">             minCapacity = Math.max(DEFAULT_CAPACITY, minCapacity);</div><div class="line">        &#125;</div><div class="line">        ensureExplicitCapacity(minCapacity);</div><div class="line">     &#125;</div><div class="line">     <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">ensureExplicitCapacity</span><span class="params">(<span class="keyword">int</span> minCapacity)</span> </span>&#123;</div><div class="line">         modCount++;</div><div class="line">        <span class="comment">//超出了数组可容纳的长度，需要进行动态扩展</span></div><div class="line">        <span class="keyword">if</span> (minCapacity - elementData.length &gt; <span class="number">0</span>)</div><div class="line">            grow(minCapacity);</div><div class="line">    &#125;</div><div class="line">     <span class="comment">//这才是动态扩展的核心</span></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">grow</span><span class="params">(<span class="keyword">int</span> minCapacity)</span> </span>&#123;</div><div class="line">        <span class="keyword">int</span> oldCapacity = elementData.length;</div><div class="line">        <span class="comment">//设置新数组的容量扩展为原来数组的1.5倍</span></div><div class="line">        <span class="keyword">int</span> newCapacity = oldCapacity + (oldCapacity &gt;&gt; <span class="number">1</span>);</div><div class="line">        <span class="comment">//再判断一下新数组的容量够不够，够了就直接使用这个长度创建新数组， 不够就将数组长度设置为需要的长度</span></div><div class="line">        <span class="keyword">if</span> (newCapacity - minCapacity &lt; <span class="number">0</span>)</div><div class="line">            newCapacity = minCapacity;</div><div class="line">        <span class="comment">//判断有没超过最大限制</span></div><div class="line">        <span class="keyword">if</span> (newCapacity - MAX_ARRAY_SIZE &gt; <span class="number">0</span>)</div><div class="line">            newCapacity = hugeCapacity(minCapacity);</div><div class="line">        <span class="comment">//将原来数组的值copy新数组中去</span></div><div class="line">        elementData = Arrays.copyOf(elementData, newCapacity);</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">hugeCapacity</span><span class="params">(<span class="keyword">int</span> minCapacity)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (minCapacity &lt; <span class="number">0</span>) <span class="comment">// overflow</span></div><div class="line">             <span class="keyword">throw</span> <span class="keyword">new</span> OutOfMemoryError();</div><div class="line">        <span class="keyword">return</span> (minCapacity &gt; MAX_ARRAY_SIZE) ?</div><div class="line">            Integer.MAX_VALUE :</div><div class="line">            MAX_ARRAY_SIZE;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>从上面的ArrayList的源码就可以知道,整个ArrayList的动态实现就是在增加数据的时候判断数组的容量是否足够,不够就重新生成一个1.5倍的数组,然后进行复制。这就是整个ArrayList的核心。</p>
+<h3 id="golang里面的动态数组—slice"><a href="#golang里面的动态数组—slice" class="headerlink" title="golang里面的动态数组—slice"></a>golang里面的动态数组—slice</h3><h4 id="Go中的数组定义"><a href="#Go中的数组定义" class="headerlink" title="Go中的数组定义"></a>Go中的数组定义</h4><p>在Go中的数组和Java有点不一样。在golang中数组是内置类型,初始化后长度是固定的，没有办法修改其长度,数组的长度也是其类型的一部分。数组是值类型,通过从0开始的下标索引访问元素值。值得注意的是如果GO中的数组作为函数的参数，那么实际传递的参数是一份数组的拷贝,而不是数组的指针。<br><img src="http://ofa8x9gy9.bkt.clouddn.com/golang%E6%95%B0%E7%BB%84.png" alt=""><br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> b [<span class="number">5</span>]<span class="keyword">int</span> <span class="comment">//没有初始值，会自动的给出默认值&#123;0,0,0,0,0&#125;</span></div><div class="line">a:=[<span class="number">5</span>]<span class="keyword">int</span>&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>&#125;</div><div class="line">b:=[...]<span class="keyword">int</span>&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>&#125;</div></pre></td></tr></table></figure></p>
+<h4 id="slice"><a href="#slice" class="headerlink" title="slice"></a>slice</h4><p>数组的长度是不可改变的,在很多场景都不是很适用，但是slice不一样。slice是golang的内置类型。在slice中有两个概念,和数组一样，有两个内置的属性：一个是len长度，一个是cap容量。slice是应用类型,因此当传递切片将和应用同一指针，修改值会影响其他的对象。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> a []<span class="keyword">int</span></div><div class="line"><span class="comment">//一般建议的初始化是用make()来初始化</span></div></pre></td></tr></table></figure></p>
+<p>上面就可以表示一个slice,和声明数组差不多。只是少了一个长度。<br>slice也可以从一个数组或者已经存在的<code>slice</code>中再次声明。<code>slice</code>通过<code>a[i:j]</code>来获取,其中i是数组的开始位置,j是结束位置(不包含),长度为j-i<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 声明一个含有10个元素元素类型为byte的数组</span></div><div class="line"><span class="keyword">var</span> arr = [<span class="number">10</span>]<span class="keyword">byte</span> &#123;<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>, <span class="string">'d'</span>, <span class="string">'e'</span>, <span class="string">'f'</span>, <span class="string">'g'</span>, <span class="string">'h'</span>, <span class="string">'i'</span>, <span class="string">'j'</span>&#125;</div><div class="line"></div><div class="line"><span class="comment">// 声明两个含有byte的slice</span></div><div class="line"><span class="keyword">var</span> a, b ,c ,d[]<span class="keyword">byte</span></div><div class="line"><span class="comment">// a指向数组的第3个元素开始，并到第五个元素结束，现在a含有的元素: arr[2]、arr[3]和ar[4]</span></div><div class="line">a = arr[<span class="number">2</span>:<span class="number">5</span>]</div><div class="line"><span class="comment">// b是数组arr的另一个slice, b的元素是：arr[3]和arr[4]</span></div><div class="line">b = arr[<span class="number">3</span>:<span class="number">5</span>]</div><div class="line"><span class="comment">//c是数组arr的另一个slice,c的元素师:arr[0],arr[1],arr[2]</span></div><div class="line">c = arr [:<span class="number">3</span>]</div><div class="line"><span class="comment">//slice的默认开始位置是0，arr[:n]等价于arr[0:n]</span></div><div class="line"><span class="comment">//slice的第二个序列默认是数组的长度，ar[n:]等价于ar[n:len(ar)]</span></div><div class="line"><span class="comment">//如果从一个数组里面直接获取slice，可以这样ar[:],因为默认第一个序列是0，第二个是数组的长度，即等价于ar[0:len(ar)]</span></div></pre></td></tr></table></figure></p>
+<p>基本结构如下：<br><img src="http://ofa8x9gy9.bkt.clouddn.com/slice.png" alt=""><br><code>slice</code>是引用类型,所以修改a中元素中的值，那么b中的值也会改变。<br>对于slice有几个有用的内置函数：</p>
+<ul>
+<li><code>len()</code>获取slice的长度</li>
+<li><code>cap()</code>获取slice的最大容量</li>
+<li><code>append()</code> 向slice中追加一个或者多个元素，然后返回一个和slice一样类型的slice</li>
+<li><code>copy()</code> 从源slice的src中复制元素到目标dst，并且返回复制的元素的个数<br>需要注意的是<code>appendd</code>函数会改变slice的应用。cap不足时会按照cap的两倍进行扩容。<h3 id="有意思的算法—扩容"><a href="#有意思的算法—扩容" class="headerlink" title="有意思的算法—扩容"></a>有意思的算法—扩容</h3>首先有一个问题:在ArrayList中扩容是通过复制整个数组完成,每次当数组的容量满了，就会重新建一个长度是上次两倍的数组，然后进行复制操作，然后释放掉原来的数组。时间复杂度可以简单的看作使用for循环的嵌套，在复制数组的时候相当于用for循环来遍历了一遍数组。所以复制的时间复杂度应该是O(N)的。<br>但是整个ArrayList在末尾插入的时候表现是很快的。这里就有一个均摊的思想。  </li>
+</ul>
+<ul>
+<li>首先并不是每个元素的插入都会触发复制扩容这个操作。只有才数组长度不够的情况下，才会产生。然后均摊下来就是o(1)了。所以在某些情况下AarryList的性能会出现波动也是这个原因。</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/golang/" rel="tag">#golang</a>
+          
+            <a href="/tags/Java/" rel="tag">#Java</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/11/28/IP初识/" rel="next" title="IP初识">
+                <i class="fa fa-chevron-left"></i> IP初识
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ofa8x9gy9.bkt.clouddn.com/0.jpg"
+               alt="fluge" />
+          <p class="site-author-name" itemprop="name">fluge</p>
+          <p class="site-description motion-element" itemprop="description">积累漫长而艰辛，coding....。</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">3</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Java里的动态数组—ArrayList"><span class="nav-number">1.</span> <span class="nav-text">Java里的动态数组—ArrayList</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Java里面的初始化和实现"><span class="nav-number">1.0.1.</span> <span class="nav-text">Java里面的初始化和实现</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ArrayList里面的将数组动态扩容实现add和remove"><span class="nav-number">1.0.2.</span> <span class="nav-text">ArrayList里面的将数组动态扩容实现add和remove</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#golang里面的动态数组—slice"><span class="nav-number">2.</span> <span class="nav-text">golang里面的动态数组—slice</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Go中的数组定义"><span class="nav-number">2.1.</span> <span class="nav-text">Go中的数组定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#slice"><span class="nav-number">2.2.</span> <span class="nav-text">slice</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#有意思的算法—扩容"><span class="nav-number">3.</span> <span class="nav-text">有意思的算法—扩容</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fluge</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+  
+  
+
+  
+
+  
+
+</body>
+</html>
