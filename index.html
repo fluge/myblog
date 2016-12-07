@@ -243,6 +243,130 @@
             
               
                 
+                <a class="post-title-link" href="/2016/12/05/Java里的hasMap和golang里的map/" itemprop="url">
+                  Java里的hasMap和golang里的map
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-12-05T14:29:56+08:00" content="2016-12-05">
+              2016-12-05
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Java和golang/" itemprop="url" rel="index">
+                    <span itemprop="name">Java和golang</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h3 id="哈希表"><a href="#哈希表" class="headerlink" title="哈希表"></a>哈希表</h3><p>哈希表就是一种以<code>键-值(key-value)</code>存储数据的结构,我们只要输入待查找的键即Key,即可找到对应的值。<br>使用哈希找查有两个步骤:</p>
+<ol>
+<li>使用哈希函数将被找查的键转换为数组的索引.在理想的情况下,不同的键会被装换为不同的索引值,但是在有些情况下我们需要处理多个键被哈希到同一个索引值得情况。所以哈希查找的第二个步骤是处理冲突。</li>
+<li>处理哈希碰撞冲突。一般处理哈希碰撞用拉链法和开放寻址法等方法。<blockquote>
+<p>开放地址法:当发生地址冲突时，按照某种方法继续探测哈希表中的其他存储单元，直到找到空位置为止。<br>拉链法:当通过哈希函数把键转换为数组的索引时,如果索引重复,就在该位置用链表顺序 存储该键值对。  </p>
+</blockquote>
+</li>
+</ol>
+<p><img src="http://ofa8x9gy9.bkt.clouddn.com/%E6%8B%89%E9%93%BE%E6%B3%95.png" alt="">  </p>
+<h3 id="Java中的HasMap"><a href="#Java中的HasMap" class="headerlink" title="Java中的HasMap"></a>Java中的HasMap</h3><p>基本认识：基于Map接口,允许null键/值,非同步,不保证有序,也不保证顺序不随时间变化。<br>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/12/05/Java里的hasMap和golang里的map/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/11/29/golang的切片和Java的动态数组/" itemprop="url">
                   golang的切片和Java的动态数组
                 </a>
@@ -611,7 +735,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">3</span>
+              <span class="site-state-item-count">4</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
