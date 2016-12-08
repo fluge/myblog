@@ -10,7 +10,7 @@ tags:
 ### Java里的动态数组---ArrayList  
 ArrayList是实现List接口的动态数组，每个ArrayList实例都有一个容量，该容量是指用来存储列表元素的数组的大小。随着向ArrayList中不断添加元素，容量会自动增长，自动增长会带来数据向新数组的*重新拷贝*。同时需要注意的是这个实现不是同步的。如果多个线程同时访问一个ArrayList实例，而其中至少一个线程从结构上修改了列表，那么它必须保持外部同步。(结构上的修改是指任何添加或删除一个或多个元素的的操作，或者显示调整底层数组的大小；仅仅设置元素的值不是结构上的修改)  
 <!--more-->
-##### Java里面的初始化和实现
+#### Java里面的初始化和实现
 ```java
    public class ArrayList<E>   extends 	 AbstractList<E>  implements   List<E>, RandomAccess, Cloneable, java.io.Serializable{
  	
@@ -51,7 +51,7 @@ ArrayList是实现List接口的动态数组，每个ArrayList实例都有一个�
 ```
 从上面的源码可以看出来，ArrayList的本质就是数组的，其中的add,get,set,remove等操作都是对数组的操作，所以ArrayList的特性基本都是源于数组:有序、元素可以重复、插入慢、获取快等特性。
 
-##### ArrayList里面的将数组动态扩容实现add和remove
+#### ArrayList里面的将数组动态扩容实现add和remove
 ```java
     //在末尾增加元素，虽然有时需要扩容但是时间复杂度为O(1)
 	public boolean add(E e) {
