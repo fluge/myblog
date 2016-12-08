@@ -17,7 +17,7 @@ tags:
 
 ![](http://ofa8x9gy9.bkt.clouddn.com/%E6%8B%89%E9%93%BE%E6%B3%95.png)  
 ### Java中的HasMap  
-基本认识：基于Map接口,允许null键/值,非同步,不保证有序,也不保证顺序不随时间变化。 
+基本认识：基于Map接口,*允许null键/值,非同步,不保证有序*,也不保证顺序不随时间变化。 
 <!--more--> 
 两个重要参数:  
 * 容量(Capacity)：Capacity就是bucket的大小
@@ -118,10 +118,33 @@ public V get(Object key) {
         return null;
 }
 ```  
-//TODOHasMap的哈希算法
-基本总结:基于Map接口的实现,存储键值对,可以接受null的键值,是非同步的,`HashMap`存储着Entry(hash, key, value, next)对象。  
-工作原理:通过hash的方法，通过put和get存储和获取对象。存储对象时，我们将`K/V`传给put方法时,它调用hashCode计算hash从而得到bucket位置,进一步存储，`HashMap`会根据当前bucket的占用情况自动调整容量(超过Load Facotr则resize为原来的2倍)。获取对象时,我们将K传给get,它调用hashCode计算hash从而得到bucket位置,并进一步调用equals()方法确定键值对。如果发生碰撞的时候，Hashmap通过链表将产生碰撞冲突的元素组织起来,在Java 8中,如果一个bucket中碰撞冲突的元素超过某个限制(默认是8,则使用红黑树来替换链表,从而提高速度  
+//TODOHasMap的哈希算法  
+注意:通过hash的方法，通过put和get存储和获取对象。存储对象时，我们将`K/V`传给put方法时,它调用hashCode计算hash从而得到bucket位置,进一步存储，`HashMap`会根据当前bucket的占用情况自动调整容量(超过Load Facotr则resize为原来的2倍)。获取对象时,我们将K传给get,它调用hashCode计算hash从而得到bucket位置,并进一步调用equals()方法确定键值对。如果发生碰撞的时候，Hashmap通过链表将产生碰撞冲突的元素组织起来,在Java 8中,如果一个bucket中碰撞冲突的元素超过某个限制(默认是8,则使用红黑树来替换链表,从而提高速度   
 ### golang中的map  
+基本认识:在go中一个map就是一个哈希表的引用,map类型可以写为map[K]V,对K的类型要求是必须支持`==`比较运算符。但是不建议使用浮点型作为Key。
+
+```go
+//初始化的3种方式
+ages:=make(map[string]int)// mapping from strings to ints
+ages:=map[string]int{}
+ages:=map[string]int{
+    "alice":0,
+    "charlie":33,
+}
+//取值
+ages["alice"]=0
+//赋值
+ages["charlie"]=34
+//删除
+delete(ages, "alice") // remove element ages["alice"]
+```  
+上面这些都是安全的，及时失败也会返回对应value类型的零值。  
+但是有时候需要想知道对应的元素是否真的在map之中。推荐写法：
+```go
+//map的下标语法将产生两个值；第二个是一个布尔值   
+//用于报告元素是否真的存在。布尔变量一般命名为ok，特别适合马上用于if条件判断部分。
+if age, ok := ages["alice"]; !ok { /* ... */ }
+```  
 
 
 
