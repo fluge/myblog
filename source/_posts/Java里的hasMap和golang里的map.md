@@ -124,6 +124,13 @@ public V get(Object key) {
 基本认识:在go中一个map就是一个哈希表的引用,map类型可以写为map[K]V,对K的类型要求是必须支持`==`比较运算符。但是不建议使用浮点型作为Key。
 
 ```go
+struct Hmap{//map的关键数据
+    uint8   B;    // 可以容纳2^B个项
+    uint16  bucketsize;   // 每个桶的大小
+    ....
+    byte    *buckets;     // 2^B个Buckets的数组
+    byte    *oldbuckets;  // 前一个buckets，只有当正在扩容时才不为空
+};
 //初始化的3种方式
 ages:=make(map[string]int)// mapping from strings to ints
 ages:=map[string]int{}
@@ -144,7 +151,41 @@ delete(ages, "alice") // remove element ages["alice"]
 //map的下标语法将产生两个值；第二个是一个布尔值   
 //用于报告元素是否真的存在。布尔变量一般命名为ok，特别适合马上用于if条件判断部分。
 if age, ok := ages["alice"]; !ok { /* ... */ }
-```  
+```   
 
-
-
+#### 扩容
+在golang中主要采用增量扩容--扩容因子为`6.5`。这个主要是为了缩短map容器的响应时间，因为在map桶里面数据很多事,直接复制进行扩容就会很卡，导致较长一段时间无法响应请求。不过具体时间复杂度还是采用的均摊法。具体做法:
+> 扩容会建立一个大小是原来2倍的空表。将旧的bucket搬到新表中(复制),但是并不会将旧的bucket从oldbucket中删除，而是加上一个已删除的标记。
+   
+由于整个过程是逐渐完成的,这样就会导致一部分数据还没有完全复制到新表，所以会对insert，remove，get等操作产生影响。并且只有当所有复制操作完成后才会释放oldbucket。  
+#### `insert`分析基本思路  
+1. 根据key算出hash值，进而得出索引的位置
+2. 如果bucket的位置在old table中，就重新hash到新表中
+3. 查找对应的位置，如果在bucket中如果已经存在相应的key，就覆盖原来value，没有就插入
+4. 根据table中元素的个数，判断是否扩容
+5. 如果对应的bucket已经full，重新申请新的bucket作为overbucket(溢出桶链表)。
+6. 将key/value pair插入到bucket中。  
+#### `get`查找过程
+1. 根据key算出hash值，进而得出索引的位置
+2. 如果存在old table, 首先在old table中查找，如果找到的bucket已经扩容，转到步骤3。 反之，返回其对应的value。
+3. 在new table中查找对应的value。  
+```go
+do { //对每个bucket
+    //依次比较桶内的每一项存放的高位hash与所求的hash值高位是否相等
+    for(i = 0, k = b->data, v = k + h->keysize * BUCKETSIZE; i < BUCKETSIZE; i++, k += h->keysize, v += h->valuesize) {
+        if(b->tophash[i] == top) { 
+            k2 = IK(h, k);
+            t->key->alg->equal(&eq, t->key->size, key, k2);
+            if(eq) { //相等的情况下再去做key比较...
+                *keyp = k2;
+                return IV(h, v);
+            }
+        }
+    }
+    b = b->overflow; //b设置为它的下一下溢出链
+} while(b != nil);
+```
+这里一个细节需要注意一下。不认真看可能会以为低位用于定位bucket在数组的index，那么高位就是用于key/valule在bucket内部的offset。事实上高8位不是用作offset的，而是用于加快key的比较的。  
+### 总结
+在扩容过程中，oldbucket是被冻结的，查找时会在oldbucket中查找，但不会在oldbucket中插入数据。如果在oldbucket是找到了相应的key，做法是将它迁移到新bucket后加入扩容标记。
+然后就是只要在某个bucket中找到第一个空位，就会将key/value插入到这个位置。也就是位置位于bucket前面的会覆盖后面的(类似于存储系统设计中做删除时的常用的技巧之一，直接用新数据追加方式写，新版本数据覆盖老版本数据)。找到了相同的key或者找到第一个空位就可以结束遍历了。不过这也意味着做删除时必须完全的遍历bucket所有溢出链，将所有的相同key数据都删除。所以目前map的设计是为插入而优化的，删除效率会比插入低一些。
