@@ -99,7 +99,7 @@
 处理哈希碰撞冲突。一般处理哈希碰撞用拉链法和开放寻址法等方法。
 开">
 <meta property="og:image" content="http://ofa8x9gy9.bkt.clouddn.com/%E6%8B%89%E9%93%BE%E6%B3%95.png">
-<meta property="og:updated_time" content="2016-12-06T13:05:07.110Z">
+<meta property="og:updated_time" content="2016-12-12T13:25:52.097Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java里的hasMap和golang里的map">
 <meta name="twitter:description" content="哈希表哈希表就是一种以键-值(key-value)存储数据的结构,我们只要输入待查找的键即Key,即可找到对应的值。使用哈希找查有两个步骤:
@@ -323,7 +323,7 @@
 </li>
 </ol>
 <p><img src="http://ofa8x9gy9.bkt.clouddn.com/%E6%8B%89%E9%93%BE%E6%B3%95.png" alt="">  </p>
-<h3 id="Java中的HasMap"><a href="#Java中的HasMap" class="headerlink" title="Java中的HasMap"></a>Java中的HasMap</h3><p>基本认识：基于Map接口,允许null键/值,非同步,不保证有序,也不保证顺序不随时间变化。<br><a id="more"></a><br>两个重要参数:  </p>
+<h3 id="Java中的HasMap"><a href="#Java中的HasMap" class="headerlink" title="Java中的HasMap"></a>Java中的HasMap</h3><p>基本认识：基于Map接口,<em>允许null键/值,非同步,不保证有序</em>,也不保证顺序不随时间变化。<br><a id="more"></a><br>两个重要参数:  </p>
 <ul>
 <li>容量(Capacity)：Capacity就是bucket的大小</li>
 <li>负载因子(Load factor)：Load factor就是bucket填满程度的最大比例。<br>如果对迭代性能要求很高的话不要把<code>capacity</code>设置过大,也不要吧<code>load factor</code>设置过小，当bucket的entries的数目大于<code>capacity*load factor</code>是就需要调整bucket的大小为当前的2倍。<h4 id="put-函数的基本思路"><a href="#put-函数的基本思路" class="headerlink" title="put()函数的基本思路:"></a><code>put()</code>函数的基本思路:</h4></li>
@@ -341,36 +341,10 @@
 <li>桶里的第一个节点就直接命中</li>
 <li>如果桶里有冲突，就通过<code>equal()</code>来找查对应的entry，若为树时间复杂度为O(logN)，链表就是O(N)   </li>
 </ol>
-<pre><code class="java"><span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">(Object key)</span> </span>{
-        Node&lt;K,V&gt; e;
-        <span class="keyword">return</span> (e = getNode(hash(key), key)) == <span class="keyword">null</span> ? <span class="keyword">null</span> : e.value;
-    }
-    <span class="function"><span class="keyword">final</span> Node&lt;K,V&gt; <span class="title">getNode</span><span class="params">(<span class="keyword">int</span> hash, Object key)</span> </span>{
-        Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; first, e; <span class="keyword">int</span> n; K k;
-        <span class="keyword">if</span> ((tab = table) != <span class="keyword">null</span> &amp;&amp; (n = tab.length) &gt; <span class="number">0</span> &amp;&amp;
-            (first = tab[(n - <span class="number">1</span>) &amp; hash]) != <span class="keyword">null</span>) {
-            <span class="comment">// 直接命中</span>
-            <span class="keyword">if</span> (first.hash == hash &amp;&amp; <span class="comment">// always check first node</span>
-                ((k = first.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))
-                <span class="keyword">return</span> first;
-            <span class="comment">// 未命中</span>
-            <span class="keyword">if</span> ((e = first.next) != <span class="keyword">null</span>) {
-                <span class="comment">// 在树中get</span>
-                <span class="keyword">if</span> (first <span class="keyword">instanceof</span> TreeNode)
-                    <span class="keyword">return</span> ((TreeNode&lt;K,V&gt;)first).getTreeNode(hash, key);
-                <span class="comment">// 在链表中get</span>
-                do {
-                    <span class="keyword">if</span> (e.hash == hash &amp;&amp;
-                        ((k = e.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))
-                        <span class="keyword">return</span> e;
-                } <span class="keyword">while</span> ((e = e.next) != <span class="keyword">null</span>);
-            }
-        }
-        <span class="keyword">return</span> <span class="keyword">null</span>;
-}
-</code></pre>
-<p>//TODOHasMap的哈希算法<br>基本总结:基于Map接口的实现,存储键值对,可以接受null的键值,是非同步的,<code>HashMap</code>存储着Entry(hash, key, value, next)对象。<br>工作原理:通过hash的方法，通过put和get存储和获取对象。存储对象时，我们将<code>K/V</code>传给put方法时,它调用hashCode计算hash从而得到bucket位置,进一步存储，<code>HashMap</code>会根据当前bucket的占用情况自动调整容量(超过Load Facotr则resize为原来的2倍)。获取对象时,我们将K传给get,它调用hashCode计算hash从而得到bucket位置,并进一步调用equals()方法确定键值对。如果发生碰撞的时候，Hashmap通过链表将产生碰撞冲突的元素组织起来,在Java 8中,如果一个bucket中碰撞冲突的元素超过某个限制(默认是8,则使用红黑树来替换链表,从而提高速度  </p>
-<h3 id="golang中的map"><a href="#golang中的map" class="headerlink" title="golang中的map"></a>golang中的map</h3>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div></pre></td><td class="code"><pre><div class="line">public V get(Object key) &#123;</div><div class="line">        Node&lt;K,V&gt; e;</div><div class="line">        return (e = getNode(hash(key), key)) == null ? null : e.value;</div><div class="line">    &#125;</div><div class="line">    final Node&lt;K,V&gt; getNode(int hash, Object key) &#123;</div><div class="line">        Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; first, e; int n; K k;</div><div class="line">        if ((tab = table) != null &amp;&amp; (n = tab.length) &gt; 0 &amp;&amp;</div><div class="line">            (first = tab[(n - 1) &amp; hash]) != null) &#123;</div><div class="line">            // 直接命中</div><div class="line">            if (first.hash == hash &amp;&amp; // always check first node</div><div class="line">                ((k = first.key) == key || (key != null &amp;&amp; key.equals(k))))</div><div class="line">                return first;</div><div class="line">            // 未命中</div><div class="line">            if ((e = first.next) != null) &#123;</div><div class="line">                // 在树中get</div><div class="line">                if (first instanceof TreeNode)</div><div class="line">                    return ((TreeNode&lt;K,V&gt;)first).getTreeNode(hash, key);</div><div class="line">                // 在链表中get</div><div class="line">                do &#123;</div><div class="line">                    if (e.hash == hash &amp;&amp;</div><div class="line">                        ((k = e.key) == key || (key != null &amp;&amp; key.equals(k))))</div><div class="line">                        return e;</div><div class="line">                &#125; while ((e = e.next) != null);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        return null;</div><div class="line">&#125;</div><div class="line">```  </div><div class="line">//TODOHasMap的哈希算法  </div><div class="line">注意:通过hash的方法，通过put和get存储和获取对象。存储对象时，我们将`K/V`传给put方法时,它调用hashCode计算hash从而得到bucket位置,进一步存储，`HashMap`会根据当前bucket的占用情况自动调整容量(超过Load Facotr则resize为原来的2倍)。获取对象时,我们将K传给get,它调用hashCode计算hash从而得到bucket位置,并进一步调用equals()方法确定键值对。如果发生碰撞的时候，Hashmap通过链表将产生碰撞冲突的元素组织起来,在Java 8中,如果一个bucket中碰撞冲突的元素超过某个限制(默认是8,则使用红黑树来替换链表,从而提高速度   </div><div class="line">### golang中的map  </div><div class="line">基本认识:在go中一个map就是一个哈希表的引用,map类型可以写为map[K]V,对K的类型要求是必须支持`==`比较运算符。但是不建议使用浮点型作为Key。</div><div class="line"></div><div class="line">```go</div><div class="line">struct Hmap&#123;//map的关键数据</div><div class="line">    uint8   B;    // 可以容纳2^B个项</div><div class="line">    uint16  bucketsize;   // 每个桶的大小</div><div class="line">    ....</div><div class="line">    byte    *buckets;     // 2^B个Buckets的数组</div><div class="line">    byte    *oldbuckets;  // 前一个buckets，只有当正在扩容时才不为空</div><div class="line">&#125;;</div><div class="line">//初始化的3种方式</div><div class="line">ages:=make(map[string]int)// mapping from strings to ints</div><div class="line">ages:=map[string]int&#123;&#125;</div><div class="line">ages:=map[string]int&#123;</div><div class="line">    "alice":0,</div><div class="line">    "charlie":33,</div><div class="line">&#125;</div><div class="line">//取值</div><div class="line">ages["alice"]=0</div><div class="line">//赋值</div><div class="line">ages["charlie"]=34</div><div class="line">//删除</div><div class="line">delete(ages, "alice") // remove element ages["alice"]</div><div class="line">```  </div><div class="line">上面这些都是安全的，及时失败也会返回对应value类型的零值。  </div><div class="line">但是有时候需要想知道对应的元素是否真的在map之中。推荐写法：</div><div class="line">```go</div><div class="line">//map的下标语法将产生两个值；第二个是一个布尔值   </div><div class="line">//用于报告元素是否真的存在。布尔变量一般命名为ok，特别适合马上用于if条件判断部分。</div><div class="line">if age, ok := ages["alice"]; !ok &#123; /* ... */ &#125;</div><div class="line">```   </div><div class="line"></div><div class="line">#### 扩容</div><div class="line">在golang中主要采用增量扩容--扩容因子为`6.5`。这个主要是为了缩短map容器的响应时间，因为在map桶里面数据很多事,直接复制进行扩容就会很卡，导致较长一段时间无法响应请求。不过具体时间复杂度还是采用的均摊法。具体做法:</div><div class="line">&gt; 扩容会建立一个大小是原来2倍的空表。将旧的bucket搬到新表中(复制),但是并不会将旧的bucket从oldbucket中删除，而是加上一个已删除的标记。</div><div class="line">   </div><div class="line">由于整个过程是逐渐完成的,这样就会导致一部分数据还没有完全复制到新表，所以会对insert，remove，get等操作产生影响。并且只有当所有复制操作完成后才会释放oldbucket。  </div><div class="line">#### `insert`分析基本思路  </div><div class="line">1. 根据key算出hash值，进而得出索引的位置</div><div class="line">2. 如果bucket的位置在old table中，就重新hash到新表中</div><div class="line">3. 查找对应的位置，如果在bucket中如果已经存在相应的key，就覆盖原来value，没有就插入</div><div class="line">4. 根据table中元素的个数，判断是否扩容</div><div class="line">5. 如果对应的bucket已经full，重新申请新的bucket作为overbucket(溢出桶链表)。</div><div class="line">6. 将key/value pair插入到bucket中。  </div><div class="line">#### `get`查找过程</div><div class="line">1. 根据key算出hash值，进而得出索引的位置</div><div class="line">2. 如果存在old table, 首先在old table中查找，如果找到的bucket已经扩容，转到步骤3。 反之，返回其对应的value。</div><div class="line">3. 在new table中查找对应的value。  </div><div class="line">```go</div><div class="line">do &#123; //对每个bucket</div><div class="line">    //依次比较桶内的每一项存放的高位hash与所求的hash值高位是否相等</div><div class="line">    for(i = 0, k = b-&gt;data, v = k + h-&gt;keysize * BUCKETSIZE; i &lt; BUCKETSIZE; i++, k += h-&gt;keysize, v += h-&gt;valuesize) &#123;</div><div class="line">        if(b-&gt;tophash[i] == top) &#123; </div><div class="line">            k2 = IK(h, k);</div><div class="line">            t-&gt;key-&gt;alg-&gt;equal(&amp;eq, t-&gt;key-&gt;size, key, k2);</div><div class="line">            if(eq) &#123; //相等的情况下再去做key比较...</div><div class="line">                *keyp = k2;</div><div class="line">                return IV(h, v);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    b = b-&gt;overflow; //b设置为它的下一下溢出链</div><div class="line">&#125; while(b != nil);</div></pre></td></tr></table></figure>
+<p>这里一个细节需要注意一下。不认真看可能会以为低位用于定位bucket在数组的index，那么高位就是用于key/valule在bucket内部的offset。事实上高8位不是用作offset的，而是用于加快key的比较的。  </p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>在扩容过程中，oldbucket是被冻结的，查找时会在oldbucket中查找，但不会在oldbucket中插入数据。如果在oldbucket是找到了相应的key，做法是将它迁移到新bucket后加入扩容标记。<br>然后就是只要在某个bucket中找到第一个空位，就会将key/value插入到这个位置。也就是位置位于bucket前面的会覆盖后面的(类似于存储系统设计中做删除时的常用的技巧之一，直接用新数据追加方式写，新版本数据覆盖老版本数据)。找到了相同的key或者找到第一个空位就可以结束遍历了。不过这也意味着做删除时必须完全的遍历bucket所有溢出链，将所有的相同key数据都删除。所以目前map的设计是为插入而优化的，删除效率会比插入低一些。</p>
+
       
     </div>
 
@@ -409,6 +383,10 @@
           </div>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/12/12/ICMP协议和UDP协议/" rel="prev" title="ICMP协议和UDP协议">
+                ICMP协议和UDP协议 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -476,7 +454,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">4</span>
+              <span class="site-state-item-count">5</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -522,7 +500,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#哈希表"><span class="nav-number">1.</span> <span class="nav-text">哈希表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java中的HasMap"><span class="nav-number">2.</span> <span class="nav-text">Java中的HasMap</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#put-函数的基本思路"><span class="nav-number">2.1.</span> <span class="nav-text">put()函数的基本思路:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#get-函数的基本思路"><span class="nav-number">2.2.</span> <span class="nav-text">get()函数的基本思路</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#golang中的map"><span class="nav-number">3.</span> <span class="nav-text">golang中的map</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#哈希表"><span class="nav-number">1.</span> <span class="nav-text">哈希表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java中的HasMap"><span class="nav-number">2.</span> <span class="nav-text">Java中的HasMap</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#put-函数的基本思路"><span class="nav-number">2.1.</span> <span class="nav-text">put()函数的基本思路:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#get-函数的基本思路"><span class="nav-number">2.2.</span> <span class="nav-text">get()函数的基本思路</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
           </div>
         </section>
