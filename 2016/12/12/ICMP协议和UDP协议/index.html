@@ -84,16 +84,20 @@
 
 
 
-<meta name="description" content="积累漫长而艰辛，coding....。">
+<meta name="description" content="ICMP网络控制报文协议ICMP基本认识ICMP经常被认为是IP层的一个组成部分,它传递差错报文以及其他需要注意的信息。ICMP报文通常被IP层或更高层协议（UDP,TCP）使用。ICMP报文是在IP数据报内部传输的。由于IP是不可靠的协议，不能保证IP数据报能够成功到达目的主机，无法进行差错控制。但是这些信息会由ICMP将错误信息封包，然后传递给主机，让主机有处理错误的机会。ICMP数据报由8b">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ICMP协议和UDP协议">
 <meta property="og:url" content="http://yoursite.com/2016/12/12/ICMP协议和UDP协议/index.html">
 <meta property="og:site_name" content="Fluge">
-<meta property="og:description" content="积累漫长而艰辛，coding....。">
-<meta property="og:updated_time" content="2016-12-12T14:53:26.988Z">
+<meta property="og:description" content="ICMP网络控制报文协议ICMP基本认识ICMP经常被认为是IP层的一个组成部分,它传递差错报文以及其他需要注意的信息。ICMP报文通常被IP层或更高层协议（UDP,TCP）使用。ICMP报文是在IP数据报内部传输的。由于IP是不可靠的协议，不能保证IP数据报能够成功到达目的主机，无法进行差错控制。但是这些信息会由ICMP将错误信息封包，然后传递给主机，让主机有处理错误的机会。ICMP数据报由8b">
+<meta property="og:image" content="http://ofa8x9gy9.bkt.clouddn.com/ICMP%E5%8D%8F%E8%AE%AE%E6%A0%BC%E5%BC%8F.png">
+<meta property="og:image" content="http://ofa8x9gy9.bkt.clouddn.com/ICMP%E5%B7%AE%E9%94%99%E6%95%B0%E6%8D%AE%E6%8A%A5.png">
+<meta property="og:image" content="http://ofa8x9gy9.bkt.clouddn.com/ICMP-ping.png">
+<meta property="og:updated_time" content="2016-12-13T15:27:50.742Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ICMP协议和UDP协议">
-<meta name="twitter:description" content="积累漫长而艰辛，coding....。">
+<meta name="twitter:description" content="ICMP网络控制报文协议ICMP基本认识ICMP经常被认为是IP层的一个组成部分,它传递差错报文以及其他需要注意的信息。ICMP报文通常被IP层或更高层协议（UDP,TCP）使用。ICMP报文是在IP数据报内部传输的。由于IP是不可靠的协议，不能保证IP数据报能够成功到达目的主机，无法进行差错控制。但是这些信息会由ICMP将错误信息封包，然后传递给主机，让主机有处理错误的机会。ICMP数据报由8b">
+<meta name="twitter:image" content="http://ofa8x9gy9.bkt.clouddn.com/ICMP%E5%8D%8F%E8%AE%AE%E6%A0%BC%E5%BC%8F.png">
 
 
 
@@ -300,7 +304,18 @@
       
 
       
-        
+        <h3 id="ICMP网络控制报文协议"><a href="#ICMP网络控制报文协议" class="headerlink" title="ICMP网络控制报文协议"></a>ICMP网络控制报文协议</h3><h4 id="ICMP基本认识"><a href="#ICMP基本认识" class="headerlink" title="ICMP基本认识"></a>ICMP基本认识</h4><p>ICMP经常被认为是IP层的一个组成部分,它传递差错报文以及其他需要注意的信息。ICMP报文通常被IP层或更高层协议（UDP,TCP）使用。ICMP报文是在IP数据报内部传输的。由于IP是不可靠的协议，不能保证IP数据报能够成功到达目的主机，无法进行差错控制。但是这些信息会由ICMP将错误信息封包，然后传递给主机，让主机有处理错误的机会。<br><img src="http://ofa8x9gy9.bkt.clouddn.com/ICMP%E5%8D%8F%E8%AE%AE%E6%A0%BC%E5%BC%8F.png" alt=""><br>ICMP数据报由8bit的错误类型和8bit的代码（表示制定类型中的一个功能，如果只有一个功能，代码就置0）以及16bit的校验和组成，检验和字段覆盖整个ICMP报文。<br>ICMP报文大致可以分为：差错报文和查询报文。因为对ICMP的差错报文需要做一些特殊响应，需要进行区分。比如在对差错报文进行响应的时候，永远不会产生另一个ICMP差错报文，防止不断的产生差错一直循环。<br>同时一下几种情况也不会产生ICMP差错报文：</p>
+<ol>
+<li>ICMP差错报文不会产生</li>
+<li>目的地址是广播地址或多播地址的IP数据报</li>
+<li>作为链路层广播的数据报</li>
+<li>不是IP分片的第一片</li>
+<li>源地址不是单个主机的数据报<br><img src="http://ofa8x9gy9.bkt.clouddn.com/ICMP%E5%B7%AE%E9%94%99%E6%95%B0%E6%8D%AE%E6%8A%A5.png" alt=""><br>ICMP查询报文：</li>
+<li>ping查询 </li>
+<li>子网掩码查询：用于无盘工作站在初始化自身的时候初始化子网掩码</li>
+<li>时间戳查询：同步时间<h4 id="ICMP应用—ping"><a href="#ICMP应用—ping" class="headerlink" title="ICMP应用—ping"></a>ICMP应用—ping</h4>ping是利用ICMP协议报来侦测另一个主机是否可达。<br>原理就是用类型码为0的ICMP发请求，收到请求的主机则用类型码为8的ICMP进行回应。ping程序用来计算间隔时间，并计算有多少个包被送达。<br><img src="http://ofa8x9gy9.bkt.clouddn.com/ICMP-ping.png" alt=""><br>ping给出来了传送的时间和TTL的数据。<br>ping还给我们一个看主机到目的主机陆游的机会。因为，ICMP的ping请求在经过路由器的时候，路由器会把自己的IP放到数据报中，而最后主机则会把这个ip列表复制到回应ICMP数据包发回给主机。但很重要的一点IP头所能记录的信息是非常有限。  这样就有了另一个充分利用TTL数据的应用Traceroute  <h4 id="ICMP应用—Traceroute"><a href="#ICMP应用—Traceroute" class="headerlink" title="ICMP应用—Traceroute"></a>ICMP应用—Traceroute</h4>Traceroute是用来侦测主机到目的主机之间所经路由情况的重要工具，也是最便利的工具。<br>Traceroute基本原理原理：它收到目的主机的IP后，首先给目的主机发送一个TTL=1的UDP数据报，而经过第一个的路由器收到数据报后，就会把TTL减1，这样TTL就会变为0.路由器就会抛弃数据报，并向主机发送目的主机不可达的ICMP数据报。然后主机就会发送TTL=2的数据报，如此往复直到到达目的主机。这样Traceroute就拿到了所有经过的路由器的IP。</li>
+</ol>
+
       
     </div>
 
@@ -452,7 +467,7 @@
               
             
             
-              <p class="post-toc-empty">此文章未包含目录</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#ICMP网络控制报文协议"><span class="nav-number">1.</span> <span class="nav-text">ICMP网络控制报文协议</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ICMP基本认识"><span class="nav-number">1.1.</span> <span class="nav-text">ICMP基本认识</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ICMP应用—ping"><span class="nav-number">1.2.</span> <span class="nav-text">ICMP应用—ping</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ICMP应用—Traceroute"><span class="nav-number">1.3.</span> <span class="nav-text">ICMP应用—Traceroute</span></a></li></ol></li></ol></div>
             
           </div>
         </section>
