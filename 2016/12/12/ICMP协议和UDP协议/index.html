@@ -93,7 +93,9 @@
 <meta property="og:image" content="http://ofa8x9gy9.bkt.clouddn.com/ICMP%E5%8D%8F%E8%AE%AE%E6%A0%BC%E5%BC%8F.png">
 <meta property="og:image" content="http://ofa8x9gy9.bkt.clouddn.com/ICMP%E5%B7%AE%E9%94%99%E6%95%B0%E6%8D%AE%E6%8A%A5.png">
 <meta property="og:image" content="http://ofa8x9gy9.bkt.clouddn.com/ICMP-ping.png">
-<meta property="og:updated_time" content="2016-12-13T15:27:50.742Z">
+<meta property="og:image" content="http://ofa8x9gy9.bkt.clouddn.com/UDP%E7%9A%84%E5%B0%81%E8%A3%85.png">
+<meta property="og:image" content="http://ofa8x9gy9.bkt.clouddn.com/UDP%E9%A6%96%E9%83%A8.png">
+<meta property="og:updated_time" content="2016-12-14T13:01:42.409Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ICMP协议和UDP协议">
 <meta name="twitter:description" content="ICMP网络控制报文协议ICMP基本认识ICMP经常被认为是IP层的一个组成部分,它传递差错报文以及其他需要注意的信息。ICMP报文通常被IP层或更高层协议（UDP,TCP）使用。ICMP报文是在IP数据报内部传输的。由于IP是不可靠的协议，不能保证IP数据报能够成功到达目的主机，无法进行差错控制。但是这些信息会由ICMP将错误信息封包，然后传递给主机，让主机有处理错误的机会。ICMP数据报由8b">
@@ -310,10 +312,11 @@
 <li>目的地址是广播地址或多播地址的IP数据报</li>
 <li>作为链路层广播的数据报</li>
 <li>不是IP分片的第一片</li>
-<li>源地址不是单个主机的数据报<br><img src="http://ofa8x9gy9.bkt.clouddn.com/ICMP%E5%B7%AE%E9%94%99%E6%95%B0%E6%8D%AE%E6%8A%A5.png" alt=""><br>ICMP查询报文：</li>
+<li>源地址不是单个主机的数据报  <a id="more"></a>
+<img src="http://ofa8x9gy9.bkt.clouddn.com/ICMP%E5%B7%AE%E9%94%99%E6%95%B0%E6%8D%AE%E6%8A%A5.png" alt=""><br>ICMP查询报文：</li>
 <li>ping查询 </li>
 <li>子网掩码查询：用于无盘工作站在初始化自身的时候初始化子网掩码</li>
-<li>时间戳查询：同步时间<h4 id="ICMP应用—ping"><a href="#ICMP应用—ping" class="headerlink" title="ICMP应用—ping"></a>ICMP应用—ping</h4>ping是利用ICMP协议报来侦测另一个主机是否可达。<br>原理就是用类型码为0的ICMP发请求，收到请求的主机则用类型码为8的ICMP进行回应。ping程序用来计算间隔时间，并计算有多少个包被送达。<br><img src="http://ofa8x9gy9.bkt.clouddn.com/ICMP-ping.png" alt=""><br>ping给出来了传送的时间和TTL的数据。<br>ping还给我们一个看主机到目的主机陆游的机会。因为，ICMP的ping请求在经过路由器的时候，路由器会把自己的IP放到数据报中，而最后主机则会把这个ip列表复制到回应ICMP数据包发回给主机。但很重要的一点IP头所能记录的信息是非常有限。  这样就有了另一个充分利用TTL数据的应用Traceroute  <h4 id="ICMP应用—Traceroute"><a href="#ICMP应用—Traceroute" class="headerlink" title="ICMP应用—Traceroute"></a>ICMP应用—Traceroute</h4>Traceroute是用来侦测主机到目的主机之间所经路由情况的重要工具，也是最便利的工具。<br>Traceroute基本原理原理：它收到目的主机的IP后，首先给目的主机发送一个TTL=1的UDP数据报，而经过第一个的路由器收到数据报后，就会把TTL减1，这样TTL就会变为0.路由器就会抛弃数据报，并向主机发送目的主机不可达的ICMP数据报。然后主机就会发送TTL=2的数据报，如此往复直到到达目的主机。这样Traceroute就拿到了所有经过的路由器的IP。</li>
+<li>时间戳查询：同步时间<h4 id="ICMP应用—ping"><a href="#ICMP应用—ping" class="headerlink" title="ICMP应用—ping"></a>ICMP应用—ping</h4>ping是利用ICMP协议报来侦测另一个主机是否可达。<br>原理就是用类型码为0的ICMP发请求，收到请求的主机则用类型码为8的ICMP进行回应。ping程序用来计算间隔时间，并计算有多少个包被送达。<br><img src="http://ofa8x9gy9.bkt.clouddn.com/ICMP-ping.png" alt=""><br>ping给出来了传送的时间和TTL的数据。<br>ping还给我们一个看主机到目的主机陆游的机会。因为，ICMP的ping请求在经过路由器的时候，路由器会把自己的IP放到数据报中，而最后主机则会把这个ip列表复制到回应ICMP数据包发回给主机。但很重要的一点IP头所能记录的信息是非常有限。  这样就有了另一个充分利用TTL数据的应用Traceroute  <h4 id="ICMP应用—Traceroute"><a href="#ICMP应用—Traceroute" class="headerlink" title="ICMP应用—Traceroute"></a>ICMP应用—Traceroute</h4>Traceroute是用来侦测主机到目的主机之间所经路由情况的重要工具，也是最便利的工具。<br>Traceroute基本原理原理：它收到目的主机的IP后，首先给目的主机发送一个TTL=1的UDP数据报，而经过第一个的路由器收到数据报后，就会把TTL减1，这样TTL就会变为0.路由器就会抛弃数据报，并向主机发送目的主机不可达的ICMP数据报。然后主机就会发送TTL=2的数据报，如此往复直到到达目的主机。这样Traceroute就拿到了所有经过的路由器的IP。  <h3 id="UDP协议"><a href="#UDP协议" class="headerlink" title="UDP协议"></a>UDP协议</h3><h4 id="基本认识"><a href="#基本认识" class="headerlink" title="基本认识"></a>基本认识</h4>UDP是一个简单的面向数据报的传输层协议,UDP为网络层以上和应用层以下提供了一个简单的接口,传输方式”Best Effort”。UDP不用建立链接,它一旦把应用程序发给网络层的数据发送出去,就不保留备份。所以也就不提供超时重传，出错重传等功能。属于不可靠的协议。<br>UDP其实可以看做IP协议暴露在传输层的一个接口。传输层和网络层的区别在于:传输层是提供端到端的服务的。打个比方:小明(进程A)在M市要去寄一封信给在N市的小芳(进程B)，其中邮局就统一把很多的信，用车从M运到N市(网络层)。最后由邮递员(传输层)进行最后一步把小明的信送到小芳的家中。UDP可以看做IP协议在传输层的“傀儡”。<br>UDP的数据包分为头部和数据。UDP的数据报需要经过IP协议的封装，然后通过IP协议传输到目的电脑，随后拆封，并将信息送到相应端口的。<br><img src="http://ofa8x9gy9.bkt.clouddn.com/UDP%E7%9A%84%E5%B0%81%E8%A3%85.png" alt=""><br><img src="http://ofa8x9gy9.bkt.clouddn.com/UDP%E9%A6%96%E9%83%A8.png" alt="">   <h4 id="校验和"><a href="#校验和" class="headerlink" title="校验和"></a>校验和</h4>这在UDP中是一个可选的选项，UDP校验和覆盖UDP协议头和数据，这和IP的校验和是不同的，IP协议的校验和只是覆盖IP数据头。UDP和TCP都包含一个伪首部，伪首部包含IP地址，目的是让UDP两次检查数据是否已经正确到达目的地，如果发送端没有打开检验和选项，而接收端计算检验和有差错，那么UDP数据将会被悄悄的丢掉（不保证送达），而不产生任何差错报文。</li>
 </ol>
 
       
@@ -354,6 +357,10 @@
           </div>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/12/14/跨域/" rel="prev" title="跨域">
+                跨域 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -421,7 +428,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">5</span>
+              <span class="site-state-item-count">8</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -429,7 +436,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-count">5</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -438,7 +445,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-count">9</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -467,7 +474,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#ICMP网络控制报文协议"><span class="nav-number">1.</span> <span class="nav-text">ICMP网络控制报文协议</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ICMP基本认识"><span class="nav-number">1.1.</span> <span class="nav-text">ICMP基本认识</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ICMP应用—ping"><span class="nav-number">1.2.</span> <span class="nav-text">ICMP应用—ping</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ICMP应用—Traceroute"><span class="nav-number">1.3.</span> <span class="nav-text">ICMP应用—Traceroute</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#ICMP网络控制报文协议"><span class="nav-number">1.</span> <span class="nav-text">ICMP网络控制报文协议</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ICMP基本认识"><span class="nav-number">1.1.</span> <span class="nav-text">ICMP基本认识</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ICMP应用—ping"><span class="nav-number">1.2.</span> <span class="nav-text">ICMP应用—ping</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ICMP应用—Traceroute"><span class="nav-number">1.3.</span> <span class="nav-text">ICMP应用—Traceroute</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UDP协议"><span class="nav-number">2.</span> <span class="nav-text">UDP协议</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#基本认识"><span class="nav-number">2.1.</span> <span class="nav-text">基本认识</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#校验和"><span class="nav-number">2.2.</span> <span class="nav-text">校验和</span></a></li></ol></li></ol></div>
             
           </div>
         </section>

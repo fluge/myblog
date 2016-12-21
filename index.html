@@ -243,6 +243,356 @@
             
               
                 
+                <a class="post-title-link" href="/2016/12/16/session和cookie/" itemprop="url">
+                  session和cookie
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-12-16T18:35:35+08:00" content="2016-12-16">
+              2016-12-16
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/web/" itemprop="url" rel="index">
+                    <span itemprop="name">web</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="基本认识"><a href="#基本认识" class="headerlink" title="基本认识"></a>基本认识</h3><p>首先有一点必须特别的清楚： 因为HTTP协议是无状态的，客户每次读取web页面时，服务器都打开新的会话，而且服务器也不会自动维护客户的上下文信息，对于一个浏览器发出的多次请求，WEB服务器无法区分 是不是来源于同一个浏览器，更别说是否是来自同一用户。为了保持用户的状态，有了两种机制，一般用户客户端的cookie机制，和用于服务器端的session机制，这两种机制都是为了保持状态，既有联系又有区别。</p>
+<h3 id="cookie基本实现机制"><a href="#cookie基本实现机制" class="headerlink" title="cookie基本实现机制"></a>cookie基本实现机制</h3><p>现在的cookie是HTTP协议的一部分，一般存在HTTP的响应头，内容是一系列的键值对的形式，简单说：cookie就是服务器在用户的浏览器中存储的一小段文本文件（大小不能超过3K）不包含任何可执行代码，里面一般包含的是用户的登录信息之类的比较少的，用来验证用户是否合法（不止局限与此，cookie是用来记录状态的，也可以是购物的等一系列状态，让服务器知道我们浏览的那些地方，购物是对那些感兴趣，一般很多广告都是根据这个东西来推送的，你在某购物网站买了一个东西，然后发现浏览别的网站，发现广告都是和这相关的）。  cookie的内容主要包括：key-value,Expires（过期时间），path和domain<br>path和domain一起构成cookie的作用范围。<br>cookie的实现流程：  </p>
+<ol>
+<li>浏览器向某个URL发起HTTP请求 （可以是任何请求，比如GET，POST等）</li>
+<li>对应的服务器收到该HTTP请求，并做相应的响应（响应头和请求体两部分），在响应的头中加入<code>Set-Cookie</code>字段（设置相应的cookie，cookie是多个<code>key-value</code>组成的）</li>
+<li>浏览器收到来自服务器的HTTP响应</li>
+<li>浏览器在响应头中发现存在<code>Set-Cookie</code>字段，就会将相应的cookie(key-value)保存在内存或者硬盘中。需要注意的是<code>Set-Value</code>字段可以包含多个cookie,每一项都可以指定过期时间，默认的过期的时间是用户浏览器关闭的时候</li>
+<li>浏览器下次给该服务器发送HTTP请求时，会将服务器设置的cookie附加在HTTP请求头<code>Cookie</code>中浏览器可以存储多个不同域名下的Cookie，但只发送当前请求的域名曾经指定的域名，这个可以在<code>Set-Cookie</code>中指定</li>
+<li>服务器收到这个HTTP请求，发现请求头中有<code>Cookie</code>字段，就知道这个用户的状态。获取相应的信息进行响应。<br>这就是整个基本的cookie机制。保存了用户的操作状态，但是还需要注意的是,cookies是通过明文传递。在HTTP包中容易被劫持和伪造，是不安全的，不应该存一些比较重要的东西。还有就是cookie在整个会话都会在HTTP的请求中，增加了流量。<br><img src="http://ofa8x9gy9.bkt.clouddn.com/cookie.png" alt=""><br>现在的cookie，内容经过加密了<h3 id="session的基本实现机制"><a href="#session的基本实现机制" class="headerlink" title="session的基本实现机制"></a>session的基本实现机制</h3>有一个session是不能改变的，是为了维持住HTTP的状态，所以在用户每次发起HTTP请求的时候，都需要让服务器知道是那个用户发起的这个请求，然后查找这个用户的状态，在进行相应的处理。session的实现基于这点，就需要一个唯一的ID标志某个用户（session）然后在这个ID中对应多个键值对来保证用户的状态，所以前后端只需要传递一个sessionID，服务器就可找到对应的状态（这个对应的键值对可以存在redies或者数据库中）。前后端传递值基本有三种：一种是直接写在URL中，一种通过表单中的隐藏域来提交，还有一种是现在流行的做法，通过在cookie中设置一个键值对<code>jsessionID=${SessionID}</code>在传递。现在第一二种都不是很建议这么做，当然在浏览器禁用的情况下也可以通过前面两种来传递，不过一般浏览器都支持使用cookie的方式。  <h3 id="两种方式的区别和联系"><a href="#两种方式的区别和联系" class="headerlink" title="两种方式的区别和联系"></a>两种方式的区别和联系</h3></li>
+<li>cookie数据存放在客户的浏览器上，session数据放在服务器上。</li>
+<li>cookie不是很安全，别人可以分析存放在本地的cookie并进行cookie欺骗，考虑到安全应当使用session。</li>
+<li>session会在一定时间内保存在服务器上。当访问增多，会比较占用你服务器的性能<br>考虑到减轻服务器性能方面，应当使用cookie。</li>
+<li>单个cookie保存的数据不能超过4K，很多浏览器都限制一个站点最多保存20个cookie。<br>联系是：两个都是用来保持HTTP协议状态的方式，一种是客户端的实现，一种是服务器端的实现。但是session可以依赖于cookie来传递sessionID    </li>
+</ol>
+<h3 id="一个项目例子–在微信中用openid在替代对应sessionId来保持用户状态"><a href="#一个项目例子–在微信中用openid在替代对应sessionId来保持用户状态" class="headerlink" title="一个项目例子–在微信中用openid在替代对应sessionId来保持用户状态"></a>一个项目例子–在微信中用openid在替代对应sessionId来保持用户状态</h3>
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/12/15/HashMap并发的死循环/" itemprop="url">
+                  HashMap并发的死循环
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-12-15T17:52:18+08:00" content="2016-12-15">
+              2016-12-15
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/12/14/跨域/" itemprop="url">
+                  跨域
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-12-14T21:05:01+08:00" content="2016-12-14">
+              2016-12-14
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/web/" itemprop="url" rel="index">
+                    <span itemprop="name">web</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="浏览器的同源策略"><a href="#浏览器的同源策略" class="headerlink" title="浏览器的同源策略"></a>浏览器的同源策略</h3>
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/12/12/ICMP协议和UDP协议/" itemprop="url">
                   ICMP协议和UDP协议
                 </a>
@@ -305,20 +655,18 @@
 
       
         
-          
-            <h3 id="ICMP网络控制报文协议"><a href="#ICMP网络控制报文协议" class="headerlink" title="ICMP网络控制报文协议"></a>ICMP网络控制报文协议</h3><h4 id="ICMP基本认识"><a href="#ICMP基本认识" class="headerlink" title="ICMP基本认识"></a>ICMP基本认识</h4><p>ICMP经常被认为是IP层的一个组成部分,它传递差错报文以及其他需要注意的信息。ICMP报文通常被IP层或更高层协议（UDP,TCP）使用。ICMP报文是在IP数据报内部传输的。由于IP是不可靠的协议，不能保证IP数据报能够成功到达目的主机，无法进行差错控制。但是这些信息会由ICMP将错误信息封包，然后传递给主机，让主机有处理错误的机会。<br><img src="http://ofa8x9gy9.bkt.clouddn.com/ICMP%E5%8D%8F%E8%AE%AE%E6%A0%BC%E5%BC%8F.png" alt=""><br>ICMP数据报由8bit的错误类型和8bit的代码（表示制定类型中的一个功能，如果只有一个功能，代码就置0）以及16bit的校验和组成，检验和字段覆盖整个ICMP报文。<br>ICMP报文大致可以分为：差错报文和查询报文。因为对ICMP的差错报文需要做一些特殊响应，需要进行区分。比如在对差错报文进行响应的时候，永远不会产生另一个ICMP差错报文，防止不断的产生差错一直循环。<br>同时一下几种情况也不会产生ICMP差错报文：</p>
+          <h3 id="ICMP网络控制报文协议"><a href="#ICMP网络控制报文协议" class="headerlink" title="ICMP网络控制报文协议"></a>ICMP网络控制报文协议</h3><h4 id="ICMP基本认识"><a href="#ICMP基本认识" class="headerlink" title="ICMP基本认识"></a>ICMP基本认识</h4><p>ICMP经常被认为是IP层的一个组成部分,它传递差错报文以及其他需要注意的信息。ICMP报文通常被IP层或更高层协议（UDP,TCP）使用。ICMP报文是在IP数据报内部传输的。由于IP是不可靠的协议，不能保证IP数据报能够成功到达目的主机，无法进行差错控制。但是这些信息会由ICMP将错误信息封包，然后传递给主机，让主机有处理错误的机会。<br><img src="http://ofa8x9gy9.bkt.clouddn.com/ICMP%E5%8D%8F%E8%AE%AE%E6%A0%BC%E5%BC%8F.png" alt=""><br>ICMP数据报由8bit的错误类型和8bit的代码（表示制定类型中的一个功能，如果只有一个功能，代码就置0）以及16bit的校验和组成，检验和字段覆盖整个ICMP报文。<br>ICMP报文大致可以分为：差错报文和查询报文。因为对ICMP的差错报文需要做一些特殊响应，需要进行区分。比如在对差错报文进行响应的时候，永远不会产生另一个ICMP差错报文，防止不断的产生差错一直循环。<br>同时一下几种情况也不会产生ICMP差错报文：</p>
 <ol>
 <li>ICMP差错报文不会产生</li>
 <li>目的地址是广播地址或多播地址的IP数据报</li>
 <li>作为链路层广播的数据报</li>
 <li>不是IP分片的第一片</li>
-<li>源地址不是单个主机的数据报<br><img src="http://ofa8x9gy9.bkt.clouddn.com/ICMP%E5%B7%AE%E9%94%99%E6%95%B0%E6%8D%AE%E6%8A%A5.png" alt=""><br>ICMP查询报文：</li>
-<li>ping查询 </li>
-<li>子网掩码查询：用于无盘工作站在初始化自身的时候初始化子网掩码</li>
-<li>时间戳查询：同步时间<h4 id="ICMP应用—ping"><a href="#ICMP应用—ping" class="headerlink" title="ICMP应用—ping"></a>ICMP应用—ping</h4>ping是利用ICMP协议报来侦测另一个主机是否可达。<br>原理就是用类型码为0的ICMP发请求，收到请求的主机则用类型码为8的ICMP进行回应。ping程序用来计算间隔时间，并计算有多少个包被送达。<br><img src="http://ofa8x9gy9.bkt.clouddn.com/ICMP-ping.png" alt=""><br>ping给出来了传送的时间和TTL的数据。<br>ping还给我们一个看主机到目的主机陆游的机会。因为，ICMP的ping请求在经过路由器的时候，路由器会把自己的IP放到数据报中，而最后主机则会把这个ip列表复制到回应ICMP数据包发回给主机。但很重要的一点IP头所能记录的信息是非常有限。  这样就有了另一个充分利用TTL数据的应用Traceroute  <h4 id="ICMP应用—Traceroute"><a href="#ICMP应用—Traceroute" class="headerlink" title="ICMP应用—Traceroute"></a>ICMP应用—Traceroute</h4>Traceroute是用来侦测主机到目的主机之间所经路由情况的重要工具，也是最便利的工具。<br>Traceroute基本原理原理：它收到目的主机的IP后，首先给目的主机发送一个TTL=1的UDP数据报，而经过第一个的路由器收到数据报后，就会把TTL减1，这样TTL就会变为0.路由器就会抛弃数据报，并向主机发送目的主机不可达的ICMP数据报。然后主机就会发送TTL=2的数据报，如此往复直到到达目的主机。这样Traceroute就拿到了所有经过的路由器的IP。</li>
-</ol>
-
-          
+<li>源地址不是单个主机的数据报
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/12/12/ICMP协议和UDP协议/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
         
       
     </div>
@@ -858,7 +1206,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">5</span>
+              <span class="site-state-item-count">8</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -866,7 +1214,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-count">5</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -875,7 +1223,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-count">9</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
