@@ -15,6 +15,7 @@ path和domain一起构成cookie的作用范围。
 cookie的实现流程：  
 1. 浏览器向某个URL发起HTTP请求 （可以是任何请求，比如GET，POST等）
 2. 对应的服务器收到该HTTP请求，并做相应的响应（响应头和请求体两部分），在响应的头中加入`Set-Cookie`字段（设置相应的cookie，cookie是多个`key-value`组成的）
+<!--more-->
 3. 浏览器收到来自服务器的HTTP响应
 4. 浏览器在响应头中发现存在`Set-Cookie`字段，就会将相应的cookie(key-value)保存在内存或者硬盘中。需要注意的是`Set-Value`字段可以包含多个cookie,每一项都可以指定过期时间，默认的过期的时间是用户浏览器关闭的时候
 5. 浏览器下次给该服务器发送HTTP请求时，会将服务器设置的cookie附加在HTTP请求头`Cookie`中浏览器可以存储多个不同域名下的Cookie，但只发送当前请求的域名曾经指定的域名，这个可以在`Set-Cookie`中指定
@@ -30,6 +31,6 @@ cookie的实现流程：
 3. session会在一定时间内保存在服务器上。当访问增多，会比较占用你服务器的性能
    考虑到减轻服务器性能方面，应当使用cookie。
 4. 单个cookie保存的数据不能超过4K，很多浏览器都限制一个站点最多保存20个cookie。
-联系是：两个都是用来保持HTTP协议状态的方式，一种是客户端的实现，一种是服务器端的实现。但是session可以依赖于cookie来传递sessionID    
+联系是：两个都是用来保持HTTP协议状态的方式，一种是客户端的实现，一种是服务器端的实现。但是session可以依赖于cookie来传递sessionID
 
-### 一个项目例子--在微信中用openid在替代对应sessionId来保持用户状态
+### 一个项目例子--在微信中开发的小程序（公众号自动回复）里面的session问题  
