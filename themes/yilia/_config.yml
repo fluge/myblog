@@ -6,8 +6,8 @@ menu:
 
 # SubNav
 subnav:
-  github: "#"
-  weibo: "#"
+  github: "https://github.com/fluge"
+  weibo: "http://weibo.com/u/3882620304"
   #rss: "#"
   #zhihu: "#"
   #douban: "#"

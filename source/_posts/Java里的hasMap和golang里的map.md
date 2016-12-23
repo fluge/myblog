@@ -1,5 +1,5 @@
 ---
-title: Java里的hasMap和golang里的map
+title: Java里的HashMap和golang里的map
 date: 2016-12-05 14:29:56
 categories: 
 - Java和golang
@@ -16,10 +16,23 @@ tags:
 > 拉链法:当通过哈希函数把键转换为数组的索引时,如果索引重复,就在该位置用链表顺序 存储该键值对。  
 
 ![](http://ofa8x9gy9.bkt.clouddn.com/%E6%8B%89%E9%93%BE%E6%B3%95.png)  
-### Java中的HasMap  
-基本认识：基于Map接口,*允许null键/值,非同步,不保证有序*,也不保证顺序不随时间变化。 
+### Java中的HashMap  
+基本认识：基于Map接口,*允许null键/值,非同步,不保证有序*,也不保证顺序不随时间变化。  
+HashMap中和Map一样，键值对都是保存在一个内部类中的,而在HashMap类中有一个很重要的字段，那就是Node[] table，即是一个哈希桶数组。Node是HashMap的一个内部类，实现了Map.Entry接口，本质是就是一个映射(键值对)。  
+
+```java
+static class Node<K,V> implements Map.Entry<K,V> {
+        final int hash;    //用来定位数组索引位置
+        final K key;
+        V value;
+        Node<K,V> next;   //链表的下一个node
+
+        Node(int hash, K key, V value, Node<K,V> next) { ... }
+       /.../
+}
+```
 <!--more--> 
-两个重要参数:  
+还有两个重要参数:  
 * 容量(Capacity)：Capacity就是bucket的大小
 * 负载因子(Load factor)：Load factor就是bucket填满程度的最大比例。 
 如果对迭代性能要求很高的话不要把`capacity`设置过大,也不要吧`load factor`设置过小，当bucket的entries的数目大于`capacity*load factor`是就需要调整bucket的大小为当前的2倍。
@@ -118,7 +131,7 @@ public V get(Object key) {
         return null;
 }
 ```
-注意:通过hash的方法，通过put和get存储和获取对象。存储对象时，我们将`K/V`传给put方法时,它调用hashCode计算hash从而得到bucket位置,进一步存储，`HashMap`会根据当前bucket的占用情况自动调整容量(超过Load Facotr则resize为原来的2倍)。获取对象时,我们将K传给get,它调用hashCode计算hash从而得到bucket位置,并进一步调用equals()方法确定键值对。如果发生碰撞的时候，Hashmap通过链表将产生碰撞冲突的元素组织起来,在Java 8中,如果一个bucket中碰撞冲突的元素超过某个限制(默认是8,则使用红黑树来替换链表,从而提高速度 
+注意:通过hash的方法，通过put和get存储和获取对象。存储对象时，我们将`K/V`传给put方法时,它调用hashCode计算hash从而得到bucket位置,进一步存储，`HashMap`会根据当前bucket的占用情况自动调整容量(超过Load Facotr则resize为原来的2倍)。获取对象时,我们将K传给get,它调用hashCode计算hash从而得到bucket位置,并进一步调用equals()方法确定键值对。如果发生碰撞的时候，HashMap通过链表将产生碰撞冲突的元素组织起来,在Java 8中,如果一个bucket中碰撞冲突的元素超过某个限制(默认是8,则使用红黑树来替换链表,从而提高速度 
 
 ### golang中的map  
 基本认识:在go中一个map就是一个哈希表的引用,map类型可以写为map[K]V,对K的类型要求是必须支持`==`比较运算符。但是不建议使用浮点型作为Key。
@@ -194,4 +207,9 @@ do { //对每个bucket
 这里一个细节需要注意一下。不认真看可能会以为低位用于定位bucket在数组的index，那么高位就是用于key/valule在bucket内部的offset。事实上高8位不是用作offset的，而是用于加快key的比较的。  
 #### 总结
 在扩容过程中，oldbucket是被冻结的，查找时会在oldbucket中查找，但不会在oldbucket中插入数据。如果在oldbucket是找到了相应的key，做法是将它迁移到新bucket后加入扩容标记。
-然后就是只要在某个bucket中找到第一个空位，就会将key/value插入到这个位置。也就是位置位于bucket前面的会覆盖后面的(类似于存储系统设计中做删除时的常用的技巧之一，直接用新数据追加方式写，新版本数据覆盖老版本数据)。找到了相同的key或者找到第一个空位就可以结束遍历了。不过这也意味着做删除时必须完全的遍历bucket所有溢出链，将所有的相同key数据都删除。所以目前map的设计是为插入而优化的，删除效率会比插入低一些。
+然后就是只要在某个bucket中找到第一个空位，就会将key/value插入到这个位置。也就是位置位于bucket前面的会覆盖后面的(类似于存储系统设计中做删除时的常用的技巧之一，直接用新数据追加方式写，新版本数据覆盖老版本数据)。找到了相同的key或者找到第一个空位就可以结束遍历了。不过这也意味着做删除时必须完全的遍历bucket所有溢出链，将所有的相同key数据都删除。所以目前map的设计是为插入而优化的，删除效率会比插入低一些。  
+
+---
+参考:  
+[Java 8系列之重新认识HashMap](http://tech.meituan.com/java-hashmap.html)  
+[Java HashMap工作原理及实现](http://yikun.github.io/2015/04/01/Java-HashMap%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%8F%8A%E5%AE%9E%E7%8E%B0/)
