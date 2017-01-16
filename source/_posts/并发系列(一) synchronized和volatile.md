@@ -6,7 +6,7 @@ categories:
 tags: 
 - Java
 ---
-从[HashMap并发的死循环](https://fluge.github.io/2016/12/15/HashMap%E5%B9%B6%E5%8F%91%E7%9A%84%E6%AD%BB%E5%BE%AA%E7%8E%AF/)可以知道,Hashmap是没办法在多线程的情况下使用的，为了解决这个问题，在Java4之前用的是hashtable,只是现在不推荐的。在Java5之后就比较推荐使用java.util.concurrent.ConcurrentHashMap，这个在多线程的情况下，也能有很好的性能。  
+从[HashMap并发的死循环](https://fluge.github.io/2016/12/15/HashMap%E5%B9%B6%E5%8F%91%E7%9A%84%E6%AD%BB%E5%BE%AA%E7%8E%AF/)可以知道,Hashmap是没办法在多线程的情况下使用的，为了解决这个问题，在Java4之前用的是hashtable,只是现在不推荐的。在Java5之后就比较推荐使用java.util.concurrent.ConcurrentHashMap，这个在多线程的情况下，也能有很好的性能。从这里引入了Java里面一类很重要的概念---并发。先解决完上一个问题。高并发下ConcurrentHashMap的结构。
 ### 并发的一些初步了解--synchronized和volatile  
 在多线程的并发的情况下有安全的访问变量，为了解决这个问题引入一个机制---锁机制。让多线程不能同时访问一个变量。在并发过程中有需要简单的了解两个东西的含义。
 #### Java中的synchronized的简单分析  
@@ -78,7 +78,56 @@ Thread B:5
 #### Java中的volatile的简单分析
 Volatile是轻量级的synchronized，它在多处理器开发中保证了`共享变量`的“可见性”。可见性的意思是当一个线程修改一个共享变量时，另外一个线程能读到这个修改的值。
 想要彻底的理解`volatile`就必须理解Java的内存模型这个会在下一篇里文章讲到。关于`volatile`要知道就是每当线程要访问一个被volatile修饰的变量时都会从内存中直接拉取，而不会从缓存中获取这个变量的值。
-### Hashtable----几乎淘汰的遗留并发的HashMap  
+### Hashtable和----已经淘汰的遗留并发的HashMap  
+简单说一下Hashtable和HashMap的区别：HashMap是非synchronized的适合在单线程下使用，并可以接受null(HashMap可以接受为null的键值(key)和值(value)，而Hashtable则不行)。Hashtable由于方法是由synchronized修饰的。可以在并发的情况下进行使用，只不过效率不高不建议使用。
+#### Hashtable源码的简单分析  
+Hashtable源码和HashMap差不多。先看`put()`方法
+
+```java
+ public synchronized V put(K key, V value) {
+         // Hashtable中不能插入value为null的元素！！！    
+        if (value == null) {
+            throw new NullPointerException();
+        }
+        // “Hashtable中已存在键为key的键值对”,则用value替换    
+        Entry<?,?> tab[] = table;
+        int hash = key.hashCode();
+        int index = (hash & 0x7FFFFFFF) % tab.length;
+        @SuppressWarnings("unchecked")
+        Entry<K,V> entry = (Entry<K,V>)tab[index];
+        for(; entry != null ; entry = entry.next) {
+            if ((entry.hash == hash) && entry.key.equals(key)) {
+                V old = entry.value;
+                entry.value = value;
+                return old;
+            }
+        }
+
+        addEntry(hash, key, value, index);
+        return null;
+    }
+private void addEntry(int hash, K key, V value, int index) {
+        //若“Hashtable中不存在键为key的键值对”，将“修改统计数”+1    
+        modCount++;
+        //若“Hashtable实际容量” > “阈值”(阈值=总的容量 * 加载因子)则扩容   
+        Entry<?,?> tab[] = table;
+        if (count >= threshold) {
+            rehash();
+            tab = table;
+            hash = key.hashCode();
+            index = (hash & 0x7FFFFFFF) % tab.length;
+        }
+
+         //将新的key-value对插入到tab[index]处（即链表的头结点）.
+        @SuppressWarnings("unchecked")
+        Entry<K,V> e = (Entry<K,V>) tab[index];
+        tab[index] = new Entry<>(hash, key, value, e);
+        count++;
+    }
+```
+从源码看基本和HashMap差不多。解决哈希冲突的方法一样。但是不允许为null的键值对。`get()`都差不多就不分析了。  
+#### Hashtable淘汰的原因
+
 
   
 ----  
