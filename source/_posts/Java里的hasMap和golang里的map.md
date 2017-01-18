@@ -158,7 +158,6 @@ ages["charlie"]=34
 //删除
 delete(ages, "alice") // remove element ages["alice"]
 ```
-
 上面这些都是安全的，及时失败也会返回对应value类型的零值。  
 但是有时候需要想知道对应的元素是否真的在map之中。推荐写法：
 
@@ -167,13 +166,11 @@ delete(ages, "alice") // remove element ages["alice"]
 //用于报告元素是否真的存在。布尔变量一般命名为ok，特别适合马上用于if条件判断部分。
 if age, ok := ages["alice"]; !ok { /* ... */ }
 ```
-
 #### 扩容
 在golang中主要采用增量扩容--扩容因子为`6.5`。这个主要是为了缩短map容器的响应时间，因为在map桶里面数据很多事,直接复制进行扩容就会很卡，导致较长一段时间无法响应请求。不过具体时间复杂度还是采用的均摊法。具体做法:
 > 扩容会建立一个大小是原来2倍的空表。将旧的bucket搬到新表中(复制),但是并不会将旧的bucket从oldbucket中删除，而是加上一个已删除的标记。
    
 由于整个过程是逐渐完成的,这样就会导致一部分数据还没有完全复制到新表，所以会对insert，remove，get等操作产生影响。并且只有当所有复制操作完成后才会释放oldbucket。  
-
 #### `insert`分析基本思路  
 1. 根据key算出hash值，进而得出索引的位置
 2. 如果bucket的位置在old table中，就重新hash到新表中
@@ -203,7 +200,6 @@ do { //对每个bucket
     b = b->overflow; //b设置为它的下一下溢出链
 } while(b != nil);
 ```
-
 这里一个细节需要注意一下。不认真看可能会以为低位用于定位bucket在数组的index，那么高位就是用于key/valule在bucket内部的offset。事实上高8位不是用作offset的，而是用于加快key的比较的。  
 #### 总结
 在扩容过程中，oldbucket是被冻结的，查找时会在oldbucket中查找，但不会在oldbucket中插入数据。如果在oldbucket是找到了相应的key，做法是将它迁移到新bucket后加入扩容标记。
