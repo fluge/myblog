@@ -5,4 +5,5 @@ categories:
 - Java
 tags: 
 - Java
+- JMM
 ---
