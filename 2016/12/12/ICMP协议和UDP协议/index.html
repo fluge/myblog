@@ -1,0 +1,542 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>ICMP协议和UDP协议 | Fluge</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="fluge">
+    
+
+    
+    <meta name="description" content="ICMP网络控制报文协议ICMP经常被认为是IP层的一个组成部分,它传递差错报文以及其他需要注意的信息。ICMP报文通常被IP层或更高层协议（UDP,TCP）使用。ICMP报文是在IP数据报内部传输的。由于IP是不可靠的协议，不能保证IP数据报能够成功到达目的主机，无法进行差错控制。但是这些信息会由ICMP将错误信息封包，然后传递给主机，让主机有处理错误的机会。ICMP数据报由8bit的错误类型和">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ICMP协议和UDP协议">
+<meta property="og:url" content="http://yoursite.com/2016/12/12/ICMP协议和UDP协议/index.html">
+<meta property="og:site_name" content="Fluge">
+<meta property="og:description" content="ICMP网络控制报文协议ICMP经常被认为是IP层的一个组成部分,它传递差错报文以及其他需要注意的信息。ICMP报文通常被IP层或更高层协议（UDP,TCP）使用。ICMP报文是在IP数据报内部传输的。由于IP是不可靠的协议，不能保证IP数据报能够成功到达目的主机，无法进行差错控制。但是这些信息会由ICMP将错误信息封包，然后传递给主机，让主机有处理错误的机会。ICMP数据报由8bit的错误类型和">
+<meta property="og:image" content="http://ofa8x9gy9.bkt.clouddn.com/ICMP%E5%8D%8F%E8%AE%AE%E6%A0%BC%E5%BC%8F.png">
+<meta property="og:image" content="http://ofa8x9gy9.bkt.clouddn.com/ICMP%E5%B7%AE%E9%94%99%E6%95%B0%E6%8D%AE%E6%8A%A5.png">
+<meta property="og:image" content="http://ofa8x9gy9.bkt.clouddn.com/ICMP-ping.png">
+<meta property="og:image" content="http://ofa8x9gy9.bkt.clouddn.com/UDP%E7%9A%84%E5%B0%81%E8%A3%85.png">
+<meta property="og:image" content="http://ofa8x9gy9.bkt.clouddn.com/UDP%E9%A6%96%E9%83%A8.png">
+<meta property="og:updated_time" content="2016-12-30T14:23:42.437Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ICMP协议和UDP协议">
+<meta name="twitter:description" content="ICMP网络控制报文协议ICMP经常被认为是IP层的一个组成部分,它传递差错报文以及其他需要注意的信息。ICMP报文通常被IP层或更高层协议（UDP,TCP）使用。ICMP报文是在IP数据报内部传输的。由于IP是不可靠的协议，不能保证IP数据报能够成功到达目的主机，无法进行差错控制。但是这些信息会由ICMP将错误信息封包，然后传递给主机，让主机有处理错误的机会。ICMP数据报由8bit的错误类型和">
+<meta name="twitter:image" content="http://ofa8x9gy9.bkt.clouddn.com/ICMP%E5%8D%8F%E8%AE%AE%E6%A0%BC%E5%BC%8F.png">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Fluge" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Fluge" title="Fluge"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Fluge">Fluge</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/12/12/ICMP协议和UDP协议/" title="ICMP协议和UDP协议" itemprop="url">ICMP协议和UDP协议</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="fluge" target="_blank" itemprop="author">fluge</a>
+		
+  <p class="article-time">
+    <time datetime="2016-12-12T14:46:51.000Z" itemprop="datePublished"> Published 2016-12-12</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#ICMP网络控制报文协议"><span class="toc-number">1.</span> <span class="toc-text">ICMP网络控制报文协议</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#ICMP应用—ping"><span class="toc-number">1.1.</span> <span class="toc-text">ICMP应用—ping</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ICMP应用—Traceroute"><span class="toc-number">1.2.</span> <span class="toc-text">ICMP应用—Traceroute</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#UDP协议"><span class="toc-number">2.</span> <span class="toc-text">UDP协议</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#基本认识"><span class="toc-number">2.1.</span> <span class="toc-text">基本认识</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#校验和"><span class="toc-number">2.2.</span> <span class="toc-text">校验和</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h3 id="ICMP网络控制报文协议"><a href="#ICMP网络控制报文协议" class="headerlink" title="ICMP网络控制报文协议"></a>ICMP网络控制报文协议</h3><p>ICMP经常被认为是IP层的一个组成部分,它传递差错报文以及其他需要注意的信息。ICMP报文通常被IP层或更高层协议（UDP,TCP）使用。ICMP报文是在IP数据报内部传输的。由于IP是不可靠的协议，不能保证IP数据报能够成功到达目的主机，无法进行差错控制。但是这些信息会由ICMP将错误信息封包，然后传递给主机，让主机有处理错误的机会。<br><img src="http://ofa8x9gy9.bkt.clouddn.com/ICMP%E5%8D%8F%E8%AE%AE%E6%A0%BC%E5%BC%8F.png" alt=""><br>ICMP数据报由8bit的错误类型和8bit的代码（表示制定类型中的一个功能，如果只有一个功能，代码就置0）以及16bit的校验和组成，检验和字段覆盖整个ICMP报文。<br>ICMP报文大致可以分为：差错报文和查询报文。因为对ICMP的差错报文需要做一些特殊响应，需要进行区分。比如在对差错报文进行响应的时候，永远不会产生另一个ICMP差错报文，防止不断的产生差错一直循环。同时一下几种情况也不会产生ICMP差错报文：</p>
+<ol>
+<li>ICMP差错报文不会产生</li>
+<li>目的地址是广播地址或多播地址的IP数据报</li>
+<li>作为链路层广播的数据报</li>
+<li>不是IP分片的第一片</li>
+<li>源地址不是单个主机的数据报  <a id="more"></a>  
+</li>
+</ol>
+<p><img src="http://ofa8x9gy9.bkt.clouddn.com/ICMP%E5%B7%AE%E9%94%99%E6%95%B0%E6%8D%AE%E6%8A%A5.png" alt=""><br>ICMP查询报文：</p>
+<ol>
+<li>ping查询 </li>
+<li>子网掩码查询：用于无盘工作站在初始化自身的时候初始化子网掩码</li>
+<li>时间戳查询：同步时间<h4 id="ICMP应用—ping"><a href="#ICMP应用—ping" class="headerlink" title="ICMP应用—ping"></a>ICMP应用—ping</h4>ping是利用ICMP协议报来侦测另一个主机是否可达。<br>原理就是用类型码为0的ICMP发请求，收到请求的主机则用类型码为8的ICMP进行回应。ping程序用来计算间隔时间，并计算有多少个包被送达。<br><img src="http://ofa8x9gy9.bkt.clouddn.com/ICMP-ping.png" alt=""><br>ping给出来了传送的时间和TTL的数据。<br>ping还给我们一个看主机到目的主机陆游的机会。因为，ICMP的ping请求在经过路由器的时候，路由器会把自己的IP放到数据报中，而最后主机则会把这个ip列表复制到回应ICMP数据包发回给主机。但很重要的一点IP头所能记录的信息是非常有限。  这样就有了另一个充分利用TTL数据的应用Traceroute  <h4 id="ICMP应用—Traceroute"><a href="#ICMP应用—Traceroute" class="headerlink" title="ICMP应用—Traceroute"></a>ICMP应用—Traceroute</h4>Traceroute是用来侦测主机到目的主机之间所经路由情况的重要工具，也是最便利的工具。<br>Traceroute基本原理原理：它收到目的主机的IP后，首先给目的主机发送一个TTL=1的UDP数据报，而经过第一个的路由器收到数据报后，就会把TTL减1，这样TTL就会变为0.路由器就会抛弃数据报，并向主机发送目的主机不可达的ICMP数据报。然后主机就会发送TTL=2的数据报，如此往复直到到达目的主机。这样Traceroute就拿到了所有经过的路由器的IP。  <h3 id="UDP协议"><a href="#UDP协议" class="headerlink" title="UDP协议"></a>UDP协议</h3><h4 id="基本认识"><a href="#基本认识" class="headerlink" title="基本认识"></a>基本认识</h4>UDP是一个简单的面向数据报的传输层协议,UDP为网络层以上和应用层以下提供了一个简单的接口,传输方式”Best Effort”。UDP不用建立链接,它一旦把应用程序发给网络层的数据发送出去,就不保留备份。所以也就不提供超时重传，出错重传等功能。属于不可靠的协议。<br>UDP其实可以看做IP协议暴露在传输层的一个接口。传输层和网络层的区别在于:传输层是提供端到端的服务的。打个比方:小明(进程A)在M市要去寄一封信给在N市的小芳(进程B)，其中邮局就统一把很多的信，用车从M运到N市(网络层)。最后由邮递员(传输层)进行最后一步把小明的信送到小芳的家中。UDP可以看做IP协议在传输层的“傀儡”。<br>UDP的数据包分为头部和数据。UDP的数据报需要经过IP协议的封装，然后通过IP协议传输到目的电脑，随后拆封，并将信息送到相应端口的。<br><img src="http://ofa8x9gy9.bkt.clouddn.com/UDP%E7%9A%84%E5%B0%81%E8%A3%85.png" alt=""><br><img src="http://ofa8x9gy9.bkt.clouddn.com/UDP%E9%A6%96%E9%83%A8.png" alt="">   <h4 id="校验和"><a href="#校验和" class="headerlink" title="校验和"></a>校验和</h4>这在UDP中是一个可选的选项，UDP校验和覆盖UDP协议头和数据，这和IP的校验和是不同的，IP协议的校验和只是覆盖IP数据头。UDP和TCP都包含一个伪首部，伪首部包含IP地址，目的是让UDP两次检查数据是否已经正确到达目的地，如果发送端没有打开检验和选项，而接收端计算检验和有差错，那么UDP数据将会被悄悄的丢掉（不保证送达），而不产生任何差错报文。</li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/TCP-IP/">TCP/IP</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/ICMP/">ICMP</a><a href="/tags/UDP/">UDP</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2016/12/12/ICMP协议和UDP协议/" data-title="ICMP协议和UDP协议 | Fluge" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/12/14/跨域/" title="">
+  <strong>上一篇：</strong><br/>
+  <span>
+  (no title)</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/12/05/Java里的hasMap和golang里的map/"  title="Java里的HashMap和golang里的map">
+ <strong>下一篇：</strong><br/> 
+ <span>Java里的HashMap和golang里的map
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#ICMP网络控制报文协议"><span class="toc-number">1.</span> <span class="toc-text">ICMP网络控制报文协议</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#ICMP应用—ping"><span class="toc-number">1.1.</span> <span class="toc-text">ICMP应用—ping</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ICMP应用—Traceroute"><span class="toc-number">1.2.</span> <span class="toc-text">ICMP应用—Traceroute</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#UDP协议"><span class="toc-number">2.</span> <span class="toc-text">UDP协议</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#基本认识"><span class="toc-number">2.1.</span> <span class="toc-text">基本认识</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#校验和"><span class="toc-number">2.2.</span> <span class="toc-text">校验和</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Java/" title="Java">Java<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java和golang/" title="Java和golang">Java和golang<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/TCP-IP/" title="TCP/IP">TCP/IP<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/essay/" title="essay">essay<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/web/" title="web">web<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/TCP/" title="TCP">TCP<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/golang/" title="golang">golang<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ICMP/" title="ICMP">ICMP<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/UDP/" title="UDP">UDP<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ip/" title="ip">ip<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/session/" title="session">session<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/cookie/" title="cookie">cookie<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/start/" title="start">start<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://coderq.com" target="_blank" title="一个面向程序员交流分享的新一代社区">码农圈</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://wuchong.me" target="_blank" title="Jark&#39;s Blog">Jark&#39;s Blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">Weibo</p>
+    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=null&verifier=b3593ceb&dpc=1"></iframe>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Larry Page in Google. <br/>
+			This is my blog,believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/2176287895" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2017 
+		
+		<a href="/about" target="_blank" title="fluge">fluge</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

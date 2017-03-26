@@ -1,0 +1,563 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>并发系列(一) Java7的ConcurrentHashMap | Fluge</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="fluge">
+    
+
+    
+    <meta name="description" content="从HashMap并发的死循环可以知道,Hashmap是没办法在多线程的情况下使用的，为了解决这个问题，在Java4之前用的是hashtable,只是现在不推荐的。在Java5之后就比较推荐使用java.util.concurrent.ConcurrentHashMap，这个在多线程的情况下，也能有很好的性能。从这里引入了Java里面一类很重要的概念—并发。先解决完上一个问题。高并发下Concurr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="并发系列(一) Java7的ConcurrentHashMap">
+<meta property="og:url" content="http://yoursite.com/2017/01/18/并发系列(一) Java7的ConcurrentHashMap/index.html">
+<meta property="og:site_name" content="Fluge">
+<meta property="og:description" content="从HashMap并发的死循环可以知道,Hashmap是没办法在多线程的情况下使用的，为了解决这个问题，在Java4之前用的是hashtable,只是现在不推荐的。在Java5之后就比较推荐使用java.util.concurrent.ConcurrentHashMap，这个在多线程的情况下，也能有很好的性能。从这里引入了Java里面一类很重要的概念—并发。先解决完上一个问题。高并发下Concurr">
+<meta property="og:image" content="http://ofa8x9gy9.bkt.clouddn.com/Java7%E7%9A%84ConcurrentHashMap.png">
+<meta property="og:updated_time" content="2017-01-18T14:14:57.657Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="并发系列(一) Java7的ConcurrentHashMap">
+<meta name="twitter:description" content="从HashMap并发的死循环可以知道,Hashmap是没办法在多线程的情况下使用的，为了解决这个问题，在Java4之前用的是hashtable,只是现在不推荐的。在Java5之后就比较推荐使用java.util.concurrent.ConcurrentHashMap，这个在多线程的情况下，也能有很好的性能。从这里引入了Java里面一类很重要的概念—并发。先解决完上一个问题。高并发下Concurr">
+<meta name="twitter:image" content="http://ofa8x9gy9.bkt.clouddn.com/Java7%E7%9A%84ConcurrentHashMap.png">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Fluge" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Fluge" title="Fluge"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Fluge">Fluge</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/01/18/并发系列(一) Java7的ConcurrentHashMap/" title="并发系列(一) Java7的ConcurrentHashMap" itemprop="url">并发系列(一) Java7的ConcurrentHashMap</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="fluge" target="_blank" itemprop="author">fluge</a>
+		
+  <p class="article-time">
+    <time datetime="2017-01-18T10:30:18.000Z" itemprop="datePublished"> Published 2017-01-18</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#并发的一些初步了解–synchronized和volatile"><span class="toc-number">1.</span> <span class="toc-text">并发的一些初步了解–synchronized和volatile</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Java中的synchronized的简单分析"><span class="toc-number">1.1.</span> <span class="toc-text">Java中的synchronized的简单分析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Java中的volatile的简单分析"><span class="toc-number">1.2.</span> <span class="toc-text">Java中的volatile的简单分析</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Hashtable和—-已经淘汰的遗留并发的HashMap"><span class="toc-number">2.</span> <span class="toc-text">Hashtable和—-已经淘汰的遗留并发的HashMap</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Hashtable源码的简单分析"><span class="toc-number">2.1.</span> <span class="toc-text">Hashtable源码的简单分析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Hashtable淘汰的原因"><span class="toc-number">2.2.</span> <span class="toc-text">Hashtable淘汰的原因</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Java7的ConcurrentHashMap的结构分析和锁分段技术"><span class="toc-number">3.</span> <span class="toc-text">Java7的ConcurrentHashMap的结构分析和锁分段技术</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#HashEntry类"><span class="toc-number">3.1.</span> <span class="toc-text">HashEntry类</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Segment类"><span class="toc-number">3.2.</span> <span class="toc-text">Segment类</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#分段锁实现并发下的put-操作"><span class="toc-number">3.3.</span> <span class="toc-text">分段锁实现并发下的put()操作</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#小小的总结"><span class="toc-number">4.</span> <span class="toc-text">小小的总结</span></a></li></ol>
+		
+		</div>
+		
+		<p>从<a href="https://fluge.github.io/2016/12/15/HashMap%E5%B9%B6%E5%8F%91%E7%9A%84%E6%AD%BB%E5%BE%AA%E7%8E%AF/" target="_blank" rel="external">HashMap并发的死循环</a>可以知道,Hashmap是没办法在多线程的情况下使用的，为了解决这个问题，在Java4之前用的是hashtable,只是现在不推荐的。在Java5之后就比较推荐使用java.util.concurrent.ConcurrentHashMap，这个在多线程的情况下，也能有很好的性能。从这里引入了Java里面一类很重要的概念—并发。先解决完上一个问题。高并发下ConcurrentHashMap的结构。</p>
+<h3 id="并发的一些初步了解–synchronized和volatile"><a href="#并发的一些初步了解–synchronized和volatile" class="headerlink" title="并发的一些初步了解–synchronized和volatile"></a>并发的一些初步了解–synchronized和volatile</h3><p>在多线程的并发的情况下有安全的访问变量，为了解决这个问题引入一个机制—锁机制。让多线程不能同时访问一个共享变量。在并发过程中有需要简单的了解两个东西的含义。</p>
+<h4 id="Java中的synchronized的简单分析"><a href="#Java中的synchronized的简单分析" class="headerlink" title="Java中的synchronized的简单分析"></a>Java中的synchronized的简单分析</h4><p><code>synchronized</code>的用法要弄清晰一个问题:<code>synchronized</code>锁住的是代码还是对象？<br>首先是一个被<code>synchronized</code>修饰的代码块<br><a id="more"></a></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> count;</div><div class="line">   <span class="function"><span class="keyword">public</span> <span class="title">SyncThread</span><span class="params">()</span> </span>&#123;</div><div class="line">       count = <span class="number">0</span>;</div><div class="line">   &#125;</div><div class="line">   <span class="function"><span class="keyword">public</span>  <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">       <span class="keyword">synchronized</span>(<span class="keyword">this</span>) &#123;</div><div class="line">           <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++) &#123;</div><div class="line">               <span class="keyword">try</span> &#123;</div><div class="line">                   System.out.println(Thread.currentThread().getName() + <span class="string">":"</span> + (count++));</div><div class="line">                   Thread.sleep(<span class="number">100</span>);</div><div class="line">               &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">                   e.printStackTrace();</div><div class="line">               &#125;</div><div class="line">           &#125;</div><div class="line">       &#125;</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<p>在来看两段程序，这个概念可以清晰很多</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//第一段代码</span></div><div class="line">SyncThread syncThread = <span class="keyword">new</span> SyncThread();</div><div class="line">Thread thread1 = <span class="keyword">new</span> Thread(syncThread, <span class="string">"Thread A"</span>);</div><div class="line">Thread thread2 = <span class="keyword">new</span> Thread(syncThread, <span class="string">"Thread B"</span>);</div><div class="line">thread1.start();</div><div class="line">thread2.start();</div><div class="line"></div><div class="line"><span class="comment">//第二段代码</span></div><div class="line">SyncThread syncThread1 = <span class="keyword">new</span> SyncThread();</div><div class="line">SyncThread syncThread2 = <span class="keyword">new</span> SyncThread();</div><div class="line">Thread thread1 = <span class="keyword">new</span> Thread(syncThread1, <span class="string">"Thread A"</span>);</div><div class="line">Thread thread2 = <span class="keyword">new</span> Thread(syncThread1, <span class="string">"Thread B"</span>);</div><div class="line">thread1.start();</div><div class="line">thread2.start();</div></pre></td></tr></table></figure>
+<p>这两段代码执行的结果:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//第一段代码的执行结果，两个线程依次顺序执行</span></div><div class="line">Thread A:<span class="number">0</span> </div><div class="line">Thread A:<span class="number">1</span> </div><div class="line">Thread A:<span class="number">2</span>  </div><div class="line">Thread B:<span class="number">3</span> </div><div class="line">Thread B:<span class="number">4</span> </div><div class="line">Thread B:<span class="number">5</span> </div><div class="line"><span class="comment">//第二段代码的执行结果，两个线程轮流执行</span></div><div class="line">Thread A:<span class="number">0</span> </div><div class="line">Thread B:<span class="number">1</span> </div><div class="line">Thread A:<span class="number">2</span> </div><div class="line">Thread B:<span class="number">3</span> </div><div class="line">Thread A:<span class="number">4</span> </div><div class="line">Thread B:<span class="number">5</span></div></pre></td></tr></table></figure>
+<p>第一个结果是A，B两个线程按照锁的方式，依次执行。第二个结果是两个线程不受锁的控制交替执行，为什么会出现这个情况呢？主要是因为第一段代码中<code>线程A和线程B</code>都是访问<code>syncThread</code>这个一个对象，必须按照获得锁的顺序执行。但是在第二段代码中<code>线程A</code>访问的是<code>syncThread1</code>,<code>线程B</code>访问的是<code>syncThread2</code>,<code>线程A执行的是syncThread1对象中的synchronized代码(run)</code>,线程B一样。这就可以知道<code>synchronized</code>锁住的是对象，这时会有两把锁分别锁定syncThread A对象和syncThread B对象，而这两把锁是互不干扰的，不形成互斥，所以两个线程可以同时执行。<br><code>synchronized</code>是一种同步锁它修饰的对象有以下几种： </p>
+<ol>
+<li>修饰一个代码块，被修饰的代码块称为同步语句块，其作用的范围是大括号{}括起来的代码，上文的例子就是代码块，作用的对象是调用这个代码块的对象； </li>
+<li>修饰一个方法，被修饰的方法称为同步方法，其作用的范围是整个方法，作用的对象是调用这个方法的对象； </li>
+<li>修改一个静态的方法，其作用的范围是整个静态方法，作用的对象是这个<code>类</code>。  </li>
+</ol>
+<p>无论synchronized关键字加在方法上还是对象上，如果它作用的对象是非静态的，则它取得的锁是对象；如果synchronized作用的对象是一个静态方法或一个类，则它取得的锁是对类，该类所有的对象同一把锁。每个对象只有一个锁（lock）与之相关联，谁拿到这个锁谁就可以运行它所控制的那段代码</p>
+<h4 id="Java中的volatile的简单分析"><a href="#Java中的volatile的简单分析" class="headerlink" title="Java中的volatile的简单分析"></a>Java中的volatile的简单分析</h4><p>Volatile是轻量级的synchronized，它在多处理器开发中保证了<code>共享变量</code>的“可见性”。可见性的意思是当一个线程修改一个共享变量时，另外一个线程能读到这个修改的值。<br>想要彻底的理解<code>volatile</code>就必须理解Java的内存模型这个会在下一篇里文章讲到。关于<code>volatile</code>要知道就是每当线程要访问一个被volatile修饰的变量时都会从内存中直接拉取，而不会从缓存中获取这个变量的值。</p>
+<h3 id="Hashtable和—-已经淘汰的遗留并发的HashMap"><a href="#Hashtable和—-已经淘汰的遗留并发的HashMap" class="headerlink" title="Hashtable和—-已经淘汰的遗留并发的HashMap"></a>Hashtable和—-已经淘汰的遗留并发的HashMap</h3><p>简单说一下Hashtable和HashMap的区别：HashMap是非synchronized的适合在单线程下使用，并可以接受null(HashMap可以接受为null的键值(key)和值(value)，而Hashtable则不行)。Hashtable由于方法是由synchronized修饰的。可以在并发的情况下进行使用，只不过效率不高不建议使用。</p>
+<h4 id="Hashtable源码的简单分析"><a href="#Hashtable源码的简单分析" class="headerlink" title="Hashtable源码的简单分析"></a>Hashtable源码的简单分析</h4><p>Hashtable源码和HashMap差不多。先看<code>put()</code>方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> V <span class="title">put</span><span class="params">(K key, V value)</span> </span>&#123;</div><div class="line">         <span class="comment">// Hashtable中不能插入value为null的元素！！！    </span></div><div class="line">        <span class="keyword">if</span> (value == <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</div><div class="line">        &#125;</div><div class="line">        <span class="comment">// “Hashtable中已存在键为key的键值对”,则用value替换    </span></div><div class="line">        Entry&lt;?,?&gt; tab[] = table;</div><div class="line">        <span class="keyword">int</span> hash = key.hashCode();</div><div class="line">        <span class="keyword">int</span> index = (hash &amp; <span class="number">0x7FFFFFFF</span>) % tab.length;</div><div class="line">        Entry&lt;K,V&gt; entry = (Entry&lt;K,V&gt;)tab[index];</div><div class="line">        <span class="keyword">for</span>(; entry != <span class="keyword">null</span> ; entry = entry.next) &#123;</div><div class="line">            <span class="keyword">if</span> ((entry.hash == hash) &amp;&amp; entry.key.equals(key)) &#123;</div><div class="line">                V old = entry.value;</div><div class="line">                entry.value = value;</div><div class="line">                <span class="keyword">return</span> old;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        addEntry(hash, key, value, index);</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">addEntry</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, <span class="keyword">int</span> index)</span> </span>&#123;</div><div class="line">        <span class="comment">//若“Hashtable中不存在键为key的键值对”，将“修改统计数”+1    </span></div><div class="line">        modCount++;</div><div class="line">        <span class="comment">//若“Hashtable实际容量” &gt; “阈值”(阈值=总的容量 * 加载因子)则扩容   </span></div><div class="line">        Entry&lt;?,?&gt; tab[] = table;</div><div class="line">        <span class="keyword">if</span> (count &gt;= threshold) &#123;</div><div class="line">            rehash();</div><div class="line">            tab = table;</div><div class="line">            hash = key.hashCode();</div><div class="line">            index = (hash &amp; <span class="number">0x7FFFFFFF</span>) % tab.length;</div><div class="line">        &#125;</div><div class="line">         <span class="comment">//将新的key-value对插入到tab[index]处（即链表的头结点）.</span></div><div class="line">        Entry&lt;K,V&gt; e = (Entry&lt;K,V&gt;) tab[index];</div><div class="line">        tab[index] = <span class="keyword">new</span> Entry&lt;&gt;(hash, key, value, e);</div><div class="line">        count++;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>从源码看基本和HashMap差不多。解决哈希冲突的方法一样。但是不允许为null的键值对。<code>get()</code>都差不多就不分析了。  </p>
+<h4 id="Hashtable淘汰的原因"><a href="#Hashtable淘汰的原因" class="headerlink" title="Hashtable淘汰的原因"></a>Hashtable淘汰的原因</h4><p>HashTable容器使用synchronized来保证线程安全,但在线程竞争激烈的情况下HashTable的效率非常低下。因为当一个线程访问HashTable的同步方法时,其他线程访问HashTable的同步方法时,可能会进入阻塞或轮询状态。如线程1使用put进行添加元素,线程2不但不能使用put方法添加元素,并且也不能使用get方法来获取元素,所以竞争越激烈效率越低。<br>HashTable容器在竞争激烈的并发环境下表现出效率低下的原因是所有访问HashTable的线程都必须竞争<code>同一把锁</code>,那假如容器里有多把锁,每一把锁用于锁容器其中一部分数据,那么当多线程访问容器里不同数据段的数据时,线程间就不会存在锁竞争,从而可以有效的提高并发访问效率,这就是ConcurrentHashMap所使用的<code>锁分段技术</code>,首先将数据分成一段一段的存储，然后给每一段数据配一把锁,当一个线程占用锁访问其中一个段数据的时候,其他段的数据也能被其他线程访问。  </p>
+<h3 id="Java7的ConcurrentHashMap的结构分析和锁分段技术"><a href="#Java7的ConcurrentHashMap的结构分析和锁分段技术" class="headerlink" title="Java7的ConcurrentHashMap的结构分析和锁分段技术"></a>Java7的ConcurrentHashMap的结构分析和锁分段技术</h3><p>现在在Java8优化了Java7的的锁分段技术。取消了segment和Java8的Hashmap的优化一样。现在看Java7的锁分段技术，毕竟还是很有思考价值的。Java8的ConcurrentHashMap分析会在另一篇博文里面<br>Java7的ConcurrentHashMap的基本结构图,这个可以很清晰的认识到ConcurrentHashMap得内部存储结构。这个和HashMap的结构还是有很大差距的。不过有一点不会变的是:<code>两者的本质都是数组和链表的结合</code><br><img src="http://ofa8x9gy9.bkt.clouddn.com/Java7%E7%9A%84ConcurrentHashMap.png" alt=""><br>Java7的ConcurrenHashMap类中有两个静态内部类<code>HashEntry</code>和<code>Segment</code>。HashEntry 用来封装映射表的键值对;Segment用来充当锁的角色,每个<code>Segment</code>对象守护整个散列映射表的若干个桶。每个桶是由若干个 <code>HashEntry对象链接起来的链表</code>。一个ConcurrentHashMap实例中包含由若干个Segment对象组成的数组。Segment 在某些意义上有点类似于HashMap了，都是包含了一个数组，而数组中的元素可以是一个链表。</p>
+<h4 id="HashEntry类"><a href="#HashEntry类" class="headerlink" title="HashEntry类"></a>HashEntry类</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">HashEntry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123; </div><div class="line">       <span class="keyword">final</span> K key;                 <span class="comment">// 声明 key 为 final 型</span></div><div class="line">       <span class="keyword">final</span> <span class="keyword">int</span> hash;              <span class="comment">// 声明 hash 值为 final 型 </span></div><div class="line">       <span class="keyword">volatile</span> V value;            <span class="comment">// 声明 value 为 volatile 型</span></div><div class="line">       <span class="keyword">final</span> HashEntry&lt;K,V&gt; next;   <span class="comment">// 声明 next 为 final 型 </span></div><div class="line"></div><div class="line">       HashEntry(K key, <span class="keyword">int</span> hash, HashEntry&lt;K,V&gt; next, V value) &#123; </div><div class="line">           <span class="keyword">this</span>.key = key; </div><div class="line">           <span class="keyword">this</span>.hash = hash; </div><div class="line">           <span class="keyword">this</span>.next = next; </div><div class="line">           <span class="keyword">this</span>.value = value; </div><div class="line">       &#125; </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在这个里面需要注意的是  </p>
+<ol>
+<li><code>key</code>,<code>hash</code>,<code>next节点</code>都被声明为final型,这就意味着,发生了哈希冲突后,新来的节点只能插在头结点。而且链表原来的结构也没有被改变，插入新健 / 值对到链表中的操作不会影响读线程正常遍历这个链表。</li>
+<li><code>value</code>被声明为volatile变量。用volatile来保证多个线程对数据的可见性。就为<code>get()</code>不加锁打下基础。  </li>
+</ol>
+<h4 id="Segment类"><a href="#Segment类" class="headerlink" title="Segment类"></a>Segment类</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Segment</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">ReentrantLock</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123; </div><div class="line">       <span class="comment">//在本 segment 范围内，包含的 HashEntry 元素的个数 </span></div><div class="line">       <span class="keyword">transient</span> <span class="keyword">volatile</span> <span class="keyword">int</span> count; </div><div class="line">       <span class="comment">//table 被更新的次数 </span></div><div class="line">       <span class="keyword">transient</span> <span class="keyword">int</span> modCount; </div><div class="line">       <span class="comment">//当 table 中包含的 HashEntry 元素的个数超过本变量值时，触发 table 的再散列</span></div><div class="line">       <span class="keyword">transient</span> <span class="keyword">int</span> threshold;</div><div class="line">       <span class="comment">/** </span></div><div class="line">        * table 是由 HashEntry 对象组成的数组</div><div class="line">        * 如果散列时发生碰撞，碰撞的 HashEntry 对象就以链表的形式链接成一个链表</div><div class="line">        * table 数组的数组成员代表散列映射表的一个桶</div><div class="line">        * 每个 table 守护整个 ConcurrentHashMap 包含桶总数的一部分</div><div class="line">        * 如果并发级别为 16，table 则守护 ConcurrentHashMap 包含的桶总数的 1/16 </div><div class="line">        */ </div><div class="line">       <span class="keyword">transient</span> <span class="keyword">volatile</span> HashEntry&lt;K,V&gt;[] table; </div><div class="line">       <span class="comment">//装载因子 </span></div><div class="line">       <span class="keyword">final</span> <span class="keyword">float</span> loadFactor; </div><div class="line">       Segment(<span class="keyword">int</span> initialCapacity, <span class="keyword">float</span> lf) &#123; </div><div class="line">           loadFactor = lf; </div><div class="line">           setTable(HashEntry.&lt;K,V&gt;newArray(initialCapacity)); </div><div class="line">       &#125; </div><div class="line">       <span class="comment">/** </span></div><div class="line">        * 设置 table 引用到这个新生成的 HashEntry 数组</div><div class="line">        * 只能在持有锁或构造函数中调用本方法</div><div class="line">        */ </div><div class="line">       <span class="function"><span class="keyword">void</span> <span class="title">setTable</span><span class="params">(HashEntry&lt;K,V&gt;[] newTable)</span> </span>&#123; </div><div class="line">           <span class="comment">// 计算临界阀值为新数组的长度与装载因子的乘积</span></div><div class="line">           threshold = (<span class="keyword">int</span>)(newTable.length * loadFactor); </div><div class="line">           table = newTable; </div><div class="line">       &#125; </div><div class="line">       <span class="comment">//根据 key 的散列值，找到 table 中对应的那个桶（table 数组的某个数组成员） </span></div><div class="line">       <span class="function">HashEntry&lt;K,V&gt; <span class="title">getFirst</span><span class="params">(<span class="keyword">int</span> hash)</span> </span>&#123; </div><div class="line">           HashEntry&lt;K,V&gt;[] tab = table; </div><div class="line">       <span class="comment">// 把散列值与 table 数组长度减 1 的值相“与”，得到散列值对应的 table 数组的下标然后返回 table 数组中此下标对应的 HashEntry 元素</span></div><div class="line">           <span class="keyword">return</span> tab[hash &amp; (tab.length - <span class="number">1</span>)]; </div><div class="line">       &#125; </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在这个里面需要注意的是：</p>
+<ol>
+<li><code>Segment</code>类是继承ReentrantLock类,这就是为了让Segment对象可以充当锁。每个Segment对象用来守护其(成员对象 table中)包含的若干个桶。</li>
+<li><code>table</code>是一个由<code>HashEntry对象</code>组成的数组。table数组的每一个数组成员就是散列映射表的一个桶。</li>
+<li><code>count</code>变量是一个计数器，它表示每个<code>Segment对象</code>管理的table数组(若干个HashEntry组成的链表)包含的HashEntry对象的个数。并且是<code>volatile</code>变量,所以当需要更新计数器时,不用锁定整个ConcurrentHashMap<h4 id="分段锁实现并发下的put-操作"><a href="#分段锁实现并发下的put-操作" class="headerlink" title="分段锁实现并发下的put()操作"></a>分段锁实现并发下的put()操作</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div></pre></td><td class="code"><pre><div class="line">   <span class="function"><span class="keyword">public</span> V <span class="title">put</span><span class="params">(K key, V value)</span> </span>&#123; </div><div class="line">       <span class="keyword">if</span> (value == <span class="keyword">null</span>)          <span class="comment">//ConcurrentHashMap中不允许用null作为映射值</span></div><div class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException(); </div><div class="line">       <span class="keyword">int</span> hash = hash(key.hashCode());        <span class="comment">// 计算键对应的散列码</span></div><div class="line">       <span class="comment">// 根据散列码找到对应的 Segment </span></div><div class="line">       <span class="keyword">return</span> segmentFor(hash).put(key, hash, value, <span class="keyword">false</span>); </div><div class="line">&#125;</div><div class="line"></div><div class="line">    <span class="comment">//使用 key 的散列码来得到 segments 数组中对应的 Segment </span></div><div class="line">   <span class="function"><span class="keyword">final</span> Segment&lt;K,V&gt; <span class="title">segmentFor</span><span class="params">(<span class="keyword">int</span> hash)</span> </span>&#123; </div><div class="line">   <span class="comment">// 将散列值右移 segmentShift 个位，并在高位填充 0 </span></div><div class="line">   <span class="comment">// 然后把得到的值与 segmentMask 相“与”</span></div><div class="line">   <span class="comment">// 从而得到 hash 值对应的 segments 数组的下标值</span></div><div class="line">   <span class="comment">// 最后根据下标值返回散列码对应的 Segment 对象</span></div><div class="line">       <span class="keyword">return</span> segments[(hash &gt;&gt;&gt; segmentShift) &amp; segmentMask]; </div><div class="line">&#125;</div><div class="line">   <span class="comment">//在 Segment 中执行具体的 put 操作</span></div><div class="line">   <span class="function">V <span class="title">put</span><span class="params">(K key, <span class="keyword">int</span> hash, V value, <span class="keyword">boolean</span> onlyIfAbsent)</span> </span>&#123; </div><div class="line">           lock();  <span class="comment">// 加锁，这里是锁定某个Segment对象而非整个ConcurrentHashMap </span></div><div class="line">           <span class="keyword">try</span> &#123; </div><div class="line">               <span class="keyword">int</span> c = count; </div><div class="line">               <span class="keyword">if</span> (c++ &gt; threshold) &#123;    <span class="comment">// 如果超过再散列的阈值,执行再散列，table 数组的长度将扩充一倍</span></div><div class="line">                   rehash();  </div><div class="line">               &#125;</div><div class="line">               HashEntry&lt;K,V&gt;[] tab = table; </div><div class="line">               <span class="comment">// 把散列码值与 table 数组的长度减 1 的值相“与”</span></div><div class="line">               <span class="comment">// 得到该散列码对应的 table 数组的下标值</span></div><div class="line">               <span class="keyword">int</span> index = hash &amp; (tab.length - <span class="number">1</span>); </div><div class="line">               <span class="comment">// 找到散列码对应的具体的那个桶</span></div><div class="line">               HashEntry&lt;K,V&gt; first = tab[index]; </div><div class="line">               HashEntry&lt;K,V&gt; e = first; </div><div class="line">               <span class="keyword">while</span> (e != <span class="keyword">null</span> &amp;&amp; (e.hash != hash || !key.equals(e.key))) &#123;</div><div class="line">                   e = e.next; </div><div class="line">               &#125;</div><div class="line">               V oldValue; </div><div class="line">               <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123;            <span class="comment">// 如果键 / 值对以经存在</span></div><div class="line">                   oldValue = e.value; </div><div class="line">                   <span class="keyword">if</span> (!onlyIfAbsent) &#123;</div><div class="line">                       e.value = value;    <span class="comment">// 设置 value 值</span></div><div class="line">                   &#125;</div><div class="line">               &#125; </div><div class="line">               <span class="keyword">else</span> &#123;                        <span class="comment">// 键 / 值对不存在 </span></div><div class="line">                   oldValue = <span class="keyword">null</span>; </div><div class="line">                   ++modCount;         <span class="comment">// 要添加新节点到链表中，所以 modCont 要加 1  </span></div><div class="line">                   <span class="comment">// 创建新节点，并添加到链表的头部 </span></div><div class="line">                   tab[index] = <span class="keyword">new</span> HashEntry&lt;K,V&gt;(key, hash, first, value); </div><div class="line">                   count = c;               <span class="comment">// 写 count 变量</span></div><div class="line">               &#125; </div><div class="line">               <span class="keyword">return</span> oldValue; </div><div class="line">           &#125; <span class="keyword">finally</span> &#123; </div><div class="line">               unlock();                     <span class="comment">// 解锁</span></div><div class="line">           &#125; </div><div class="line">       &#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>在这个里面需要注意的是:这里的<code>加锁操作</code>是针对(键的hash值对应的)<code>某个具体的Segment</code>,锁定的是该Segment而不是整个ConcurrentHashMap。因为插入键值对的操作只是在这个Segment包含的某个桶中完成,不需要锁定整个ConcurrentHashMap。此时,其他写线程对另外15个Segment的加锁并不会因为当前线程对这个Segment的加锁而阻塞。同时,所有读线程几乎不会因本线程的加锁而阻塞,除非读线程刚好读到这个Segment中某个HashEntry的value域的值为null,此时需要加锁后重新读取该值。  </p>
+<h3 id="小小的总结"><a href="#小小的总结" class="headerlink" title="小小的总结"></a>小小的总结</h3><p>这次的并发下的优化的具体方向是根据一些试用场景优化的:除了少数插入操作和删除操作外，绝大多数都是读取操作，而且读操作在大多数时候都是成功的。原来的Hashtable的<code>synchronized</code>直接加锁的方式,会在<code>put()</code>操作的时候同时会阻塞其他线程的<code>get()</code>操作。ConcurrentHashMap就多次采用<code>volatile</code>变量来解决变量在<code>JMM(Java内存模型)</code>中对其他线程可见性。这也可以使<code>volatile</code>对<code>synchronized</code>锁的优化。<br>用分段锁去优化<code>synchronized</code>的<code>put()</code>操作的阻塞。就在于<code>减少多个线程对同一个锁的请求频率</code>和<code>减少线程对锁的持有时间</code>,就是减小锁的细粒度来优化锁的阻塞。</p>
+<hr>
+<p>参考:<br><a href="http://blog.csdn.net/luoweifu/article/details/46613015" target="_blank" rel="external">Java中Synchronized的用法</a><br><a href="https://www.ibm.com/developerworks/cn/java/java-lo-concurrenthashmap/" target="_blank" rel="external">探索 ConcurrentHashMap 高并发性的实现机制</a><br><a href="http://wiki.jikexueyuan.com/project/java-collection/concurrenthashmap.html" target="_blank" rel="external">ConcurrentHashMap 的实现原理</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Java/">Java</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Java/">Java</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2017/01/18/并发系列(一) Java7的ConcurrentHashMap/" data-title="并发系列(一) Java7的ConcurrentHashMap | Fluge" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2017/02/08/我理解的TCP协议(一)---重传/" title="我理解的TCP协议(一)---重传">
+  <strong>上一篇：</strong><br/>
+  <span>
+  我理解的TCP协议(一)---重传</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/01/06/我理解的TCP协议(一)---链接的建立和终止/"  title="我理解的TCP协议(一)---链接的建立和终止">
+ <strong>下一篇：</strong><br/> 
+ <span>我理解的TCP协议(一)---链接的建立和终止
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#并发的一些初步了解–synchronized和volatile"><span class="toc-number">1.</span> <span class="toc-text">并发的一些初步了解–synchronized和volatile</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Java中的synchronized的简单分析"><span class="toc-number">1.1.</span> <span class="toc-text">Java中的synchronized的简单分析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Java中的volatile的简单分析"><span class="toc-number">1.2.</span> <span class="toc-text">Java中的volatile的简单分析</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Hashtable和—-已经淘汰的遗留并发的HashMap"><span class="toc-number">2.</span> <span class="toc-text">Hashtable和—-已经淘汰的遗留并发的HashMap</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Hashtable源码的简单分析"><span class="toc-number">2.1.</span> <span class="toc-text">Hashtable源码的简单分析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Hashtable淘汰的原因"><span class="toc-number">2.2.</span> <span class="toc-text">Hashtable淘汰的原因</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Java7的ConcurrentHashMap的结构分析和锁分段技术"><span class="toc-number">3.</span> <span class="toc-text">Java7的ConcurrentHashMap的结构分析和锁分段技术</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#HashEntry类"><span class="toc-number">3.1.</span> <span class="toc-text">HashEntry类</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Segment类"><span class="toc-number">3.2.</span> <span class="toc-text">Segment类</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#分段锁实现并发下的put-操作"><span class="toc-number">3.3.</span> <span class="toc-text">分段锁实现并发下的put()操作</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#小小的总结"><span class="toc-number">4.</span> <span class="toc-text">小小的总结</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Java/" title="Java">Java<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java和golang/" title="Java和golang">Java和golang<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/TCP-IP/" title="TCP/IP">TCP/IP<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/essay/" title="essay">essay<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/web/" title="web">web<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/TCP/" title="TCP">TCP<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/golang/" title="golang">golang<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ICMP/" title="ICMP">ICMP<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/UDP/" title="UDP">UDP<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ip/" title="ip">ip<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/session/" title="session">session<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/cookie/" title="cookie">cookie<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/start/" title="start">start<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://coderq.com" target="_blank" title="一个面向程序员交流分享的新一代社区">码农圈</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://wuchong.me" target="_blank" title="Jark&#39;s Blog">Jark&#39;s Blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">Weibo</p>
+    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=null&verifier=b3593ceb&dpc=1"></iframe>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Larry Page in Google. <br/>
+			This is my blog,believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/2176287895" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2017 
+		
+		<a href="/about" target="_blank" title="fluge">fluge</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
