@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>我理解的TCP协议(一)---重传 | Fluge</title>
+    <title>我理解的TCP协议(二)---重传 | Fluge</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="fluge">
@@ -15,16 +15,16 @@
 
 RTT(Round Trip Time):就是发送一个数据包的往返时间的测量,由于路由器和网络流量均会变化，因此我们认为这个时间可能经常会发生变化，TC">
 <meta property="og:type" content="article">
-<meta property="og:title" content="我理解的TCP协议(一)---重传">
-<meta property="og:url" content="http://yoursite.com/2017/02/08/我理解的TCP协议(一)---重传/index.html">
+<meta property="og:title" content="我理解的TCP协议(二)---重传">
+<meta property="og:url" content="http://yoursite.com/2017/02/08/我理解的TCP协议(二)---重传/index.html">
 <meta property="og:site_name" content="Fluge">
 <meta property="og:description" content="原文TCP的可靠性不止建立在建立一个稳固的链接上，还有就是数据包丢失的重传机制,和防止网络波动的拥塞处理机制,这些都是慢慢发展而来的。要先了解TCP的重传和拥塞处理,需要先了解两个很常见的变量–RTT和RTO,这两个是对重传和拥塞很重要的概念。
 
 RTT(Round Trip Time):就是发送一个数据包的往返时间的测量,由于路由器和网络流量均会变化，因此我们认为这个时间可能经常会发生变化，TC">
 <meta property="og:image" content="http://ofa8x9gy9.bkt.clouddn.com/%E8%B6%85%E6%97%B6%E9%87%8D%E4%BC%A0--SACK.png">
-<meta property="og:updated_time" content="2017-03-26T09:10:25.608Z">
+<meta property="og:updated_time" content="2017-03-26T11:52:57.213Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="我理解的TCP协议(一)---重传">
+<meta name="twitter:title" content="我理解的TCP协议(二)---重传">
 <meta name="twitter:description" content="原文TCP的可靠性不止建立在建立一个稳固的链接上，还有就是数据包丢失的重传机制,和防止网络波动的拥塞处理机制,这些都是慢慢发展而来的。要先了解TCP的重传和拥塞处理,需要先了解两个很常见的变量–RTT和RTO,这两个是对重传和拥塞很重要的概念。
 
 RTT(Round Trip Time):就是发送一个数据包的往返时间的测量,由于路由器和网络流量均会变化，因此我们认为这个时间可能经常会发生变化，TC">
@@ -88,7 +88,7 @@ RTT(Round Trip Time):就是发送一个数据包的往返时间的测量,由于�
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2017/02/08/我理解的TCP协议(一)---重传/" title="我理解的TCP协议(一)---重传" itemprop="url">我理解的TCP协议(一)---重传</a>
+      <a href="/2017/02/08/我理解的TCP协议(二)---重传/" title="我理解的TCP协议(二)---重传" itemprop="url">我理解的TCP协议(二)---重传</a>
   </h1>
   <p class="article-author">By
        
@@ -112,7 +112,7 @@ RTT(Round Trip Time):就是发送一个数据包的往返时间的测量,由于�
 <blockquote>
 <p>RTT(Round Trip Time):就是发送一个数据包的往返时间的测量,由于路由器和网络流量均会变化，因此我们认为这个时间可能经常会发生变化，TCP应该跟踪这些变化并相应地改变其超时时间。<br>RTO(Retransmission TimeOut):重传超时时间,是根据RTT计算得到的。   </p>
 </blockquote>
-<h3 id="重传"><a href="#重传" class="headerlink" title="重传"></a>重传</h3><p>在重传机制中，首先在介绍重传的几个机制前，要注意。接收端给发送端的Ack确认只会确认最后一个连续的包,比如,发送端发了1,2,3,4,5一共五份数据，接收端收到了1,2,于是回ack 3,然后收到了4(注意此时3没收到，3丢失)此时的TCP会怎么办?我们要知道,因为正如前面所说的,<code>SeqNum和Ack是以字节数为单位,所以ack的时候,不能跳着确认,只能确认最大的连续收到的包</code>,不然,发送端就以为之前的都收到了。</p>
+<h3 id="重传"><a href="#重传" class="headerlink" title="重传"></a>重传</h3><p>在重传机制中，首先在介绍重传的几个机制前，要注意。接收端给发送端的Ack确认只会确认最后一个连续的包,比如,发送端发了1,2,3,4,5一共五份数据，接收端收到了1,2,于是回ack 3,然后收到了4(注意此时3没收到，3丢失)此时的TCP会怎么办?我们要知道,因为正如前面所说的,<code>SeqNum和Ack是以字节数为单位,所以ack的时候,不能跳着确认,只能确认最大的连续收到的包</code>,不然,发送端就以为之前的都收到了。<br><a id="more"></a></p>
 <h4 id="超时重传"><a href="#超时重传" class="headerlink" title="超时重传"></a>超时重传</h4><p>如果发送端决定死等3的ACK的话,等timeout后在重传3,然后接收端会回一个4(以为着3，4都收到了)。<br>但是有个问题很严重。在等3的超时的时候，由于4已经发送了,但是接收端不会发送4的ACK。说明在等3的时候，发送端会悲观的认为4也丢了。这个时候就会有两种选择：</p>
 <ol>
 <li>一种是仅重传第一个timeout的包。也就是第3份数据</li>
@@ -146,7 +146,7 @@ RTT(Round Trip Time):就是发送一个数据包的往返时间的测量,由于�
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://yoursite.com/2017/02/08/我理解的TCP协议(一)---重传/" data-title="我理解的TCP协议(一)---重传 | Fluge" data-tsina="null" class="share clearfix">
+	  <div data-url="http://yoursite.com/2017/02/08/我理解的TCP协议(二)---重传/" data-title="我理解的TCP协议(二)---重传 | Fluge" data-tsina="null" class="share clearfix">
 	  </div>
 	
 	</div>
