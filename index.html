@@ -405,27 +405,20 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2016/12/14/跨域/" title="" itemprop="url"></a>
+      <a href="/2016/12/14/跨域/" title="跨域" itemprop="url">跨域</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="fluge" target="_blank" itemprop="author">fluge</a>
 		
   <p class="article-time">
-    <time datetime="2016-12-14T13:05:01.377Z" itemprop="datePublished"> Published 2016-12-14</time>
+    <time datetime="2016-12-14T13:05:01.000Z" itemprop="datePublished"> Published 2016-12-14</time>
     
   </p>
 </header>
     <div class="article-content">
         
-        <hr>
-<p>title: 跨域<br>date: 2016-12-14 21:05:01<br>categories: </p>
-<ul>
-<li>web<br>tags:</li>
-<li>cros</li>
-</ul>
-<hr>
-<h3 id="同源策略"><a href="#同源策略" class="headerlink" title="同源策略"></a>同源策略</h3><p>这套安全策略由Netscape提出，并延续至今。它规定：JavaScript脚本只能访问与其同一来源的资源(现在很多资源是通过ajax发起异步请求来获取的，如果没有跨域这个是禁止的)。<br>所谓同源是指，域名，协议，端口相同。不同源的客户端脚本(javascript、ActionScript)在没明确授权的情况下，不能读写对方的资源。严格隔离不相关的网站提供的内容，防止客户端数据机密性或完整性丢失。<br>假设你已经成功登录Gmail服务器，同时在同一个浏览器访问恶意站点（另一个浏览器选项卡）。没有同源策略，攻击者可以通过JavaScript获取你的用户信息，你的邮件以及其他敏感信息，比如说阅读你的私密邮件，发送虚假邮件，看你的聊天记录等等。假如把这个换成银行账户，那就很恐怖了。<br>可以说同源策略是现如今浏览器安全的基石。但是如果不能突破同源策略，把所有的资源放在同一服务器下，现在看来是不现实，必须有一中方式去平衡这种安全和便捷的机制–跨域。现在一般的跨域使用的是CORS(基本所有浏览器支持)和JSONP(一些比较的老的应用使用)。  </p>
+        <h3 id="同源策略"><a href="#同源策略" class="headerlink" title="同源策略"></a>同源策略</h3><p>这套安全策略由Netscape提出，并延续至今。它规定：JavaScript脚本只能访问与其同一来源的资源(现在很多资源是通过ajax发起异步请求来获取的，如果没有跨域这个是禁止的)。<br>所谓同源是指，域名，协议，端口相同。不同源的客户端脚本(javascript、ActionScript)在没明确授权的情况下，不能读写对方的资源。严格隔离不相关的网站提供的内容，防止客户端数据机密性或完整性丢失。<br>假设你已经成功登录Gmail服务器，同时在同一个浏览器访问恶意站点（另一个浏览器选项卡）。没有同源策略，攻击者可以通过JavaScript获取你的用户信息，你的邮件以及其他敏感信息，比如说阅读你的私密邮件，发送虚假邮件，看你的聊天记录等等。假如把这个换成银行账户，那就很恐怖了。<br>可以说同源策略是现如今浏览器安全的基石。但是如果不能突破同源策略，把所有的资源放在同一服务器下，现在看来是不现实，必须有一中方式去平衡这种安全和便捷的机制–跨域。现在一般的跨域使用的是CORS(基本所有浏览器支持)和JSONP(一些比较的老的应用使用)。  </p>
 <h3 id="CROS跨域"><a href="#CROS跨域" class="headerlink" title="CROS跨域"></a>CROS跨域</h3><p>CORS是一个W3C标准，全称是”跨域资源共享”(Cross-origin resource sharing)。它允许浏览器向跨源服务器,发出XMLHttpRequest请求，从而克服了AJAX只能同源使用的限制。<br>简单说一下我对CROS的理解。就相当于我想跟一个邻居借东西(浏览器向服务器发送跨域请求)。我首先要去敲门，然后就是几种情况，一种是邻居家里你敲门没有反应(服务器端没有设置跨域)，你跟不知道邻居家里的具体情况，借东西肯定是失败的。一种是邻居进行了应答，但是告诉你我跟你不熟，不借东西给你。另外一种就是邻居进行了应答，并借给你东西。<br>
         
         
@@ -438,6 +431,16 @@
     <footer class="article-footer clearfix">
 <div class="article-catetags">
 
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Web/">Web</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/cros/">cros</a>
+  </div>
 
 </div>
 
@@ -763,6 +766,10 @@
 		  
 		
 		  
+			<li><a href="/categories/Web/" title="Web">Web<sup>1</sup></a></li>
+		  
+		
+		  
 			<li><a href="/categories/essay/" title="essay">essay<sup>1</sup></a></li>
 		  
 		
@@ -813,6 +820,10 @@
 		
 			
 				<li><a href="/tags/start/" title="start">start<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/cros/" title="cros">cros<sup>1</sup></a></li>
 			
 		
 		</ul>
