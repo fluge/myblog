@@ -1,0 +1,596 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Java里的HashMap和golang里的map | Fluge</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="fluge">
+    
+
+    
+    <meta name="description" content="哈希表哈希表就是一种以键-值(key-value)存储数据的结构,我们只要输入待查找的键即Key,即可找到对应的值。使用哈希找查有两个步骤:
+
+使用哈希函数将被找查的键转换为数组的索引.在理想的情况下,不同的键会被装换为不同的索引值,但是在有些情况下我们需要处理多个键被哈希到同一个索引值得情况。所以哈希查找的第二个步骤是处理冲突。
+处理哈希碰撞冲突。一般处理哈希碰撞用拉链法和开放寻址法等方法。
+开">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java里的HashMap和golang里的map">
+<meta property="og:url" content="http://yoursite.com/2016/12/05/Java里的hasMap和golang里的map/index.html">
+<meta property="og:site_name" content="Fluge">
+<meta property="og:description" content="哈希表哈希表就是一种以键-值(key-value)存储数据的结构,我们只要输入待查找的键即Key,即可找到对应的值。使用哈希找查有两个步骤:
+
+使用哈希函数将被找查的键转换为数组的索引.在理想的情况下,不同的键会被装换为不同的索引值,但是在有些情况下我们需要处理多个键被哈希到同一个索引值得情况。所以哈希查找的第二个步骤是处理冲突。
+处理哈希碰撞冲突。一般处理哈希碰撞用拉链法和开放寻址法等方法。
+开">
+<meta property="og:image" content="http://ofa8x9gy9.bkt.clouddn.com/%E6%8B%89%E9%93%BE%E6%B3%95.png">
+<meta property="og:updated_time" content="2017-01-18T14:14:57.654Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java里的HashMap和golang里的map">
+<meta name="twitter:description" content="哈希表哈希表就是一种以键-值(key-value)存储数据的结构,我们只要输入待查找的键即Key,即可找到对应的值。使用哈希找查有两个步骤:
+
+使用哈希函数将被找查的键转换为数组的索引.在理想的情况下,不同的键会被装换为不同的索引值,但是在有些情况下我们需要处理多个键被哈希到同一个索引值得情况。所以哈希查找的第二个步骤是处理冲突。
+处理哈希碰撞冲突。一般处理哈希碰撞用拉链法和开放寻址法等方法。
+开">
+<meta name="twitter:image" content="http://ofa8x9gy9.bkt.clouddn.com/%E6%8B%89%E9%93%BE%E6%B3%95.png">
+
+    
+    
+    <link rel="icon" href="/img/fluge.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/fluge.png" alt="Fluge" title="Fluge"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Fluge">Fluge</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/12/05/Java里的hasMap和golang里的map/" title="Java里的HashMap和golang里的map" itemprop="url">Java里的HashMap和golang里的map</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="fluge" target="_blank" itemprop="author">fluge</a>
+		
+  <p class="article-time">
+    <time datetime="2016-12-05T06:29:56.000Z" itemprop="datePublished"> Published 2016-12-05</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#哈希表"><span class="toc-number">1.</span> <span class="toc-text">哈希表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Java中的HashMap"><span class="toc-number">2.</span> <span class="toc-text">Java中的HashMap</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#put-函数的基本思路"><span class="toc-number">2.1.</span> <span class="toc-text">put()函数的基本思路:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#get-函数的基本思路"><span class="toc-number">2.2.</span> <span class="toc-text">get()函数的基本思路</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#golang中的map"><span class="toc-number">3.</span> <span class="toc-text">golang中的map</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#扩容"><span class="toc-number">3.1.</span> <span class="toc-text">扩容</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#insert分析基本思路"><span class="toc-number">3.2.</span> <span class="toc-text">insert分析基本思路</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#get查找过程"><span class="toc-number">3.3.</span> <span class="toc-text">get查找过程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#总结"><span class="toc-number">3.4.</span> <span class="toc-text">总结</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h3 id="哈希表"><a href="#哈希表" class="headerlink" title="哈希表"></a>哈希表</h3><p>哈希表就是一种以<code>键-值(key-value)</code>存储数据的结构,我们只要输入待查找的键即Key,即可找到对应的值。<br>使用哈希找查有两个步骤:</p>
+<ol>
+<li>使用哈希函数将被找查的键转换为数组的索引.在理想的情况下,不同的键会被装换为不同的索引值,但是在有些情况下我们需要处理多个键被哈希到同一个索引值得情况。所以哈希查找的第二个步骤是处理冲突。</li>
+<li>处理哈希碰撞冲突。一般处理哈希碰撞用拉链法和开放寻址法等方法。<blockquote>
+<p>开放地址法:当发生地址冲突时，按照某种方法继续探测哈希表中的其他存储单元，直到找到空位置为止。<br>拉链法:当通过哈希函数把键转换为数组的索引时,如果索引重复,就在该位置用链表顺序 存储该键值对。  </p>
+</blockquote>
+</li>
+</ol>
+<p><img src="http://ofa8x9gy9.bkt.clouddn.com/%E6%8B%89%E9%93%BE%E6%B3%95.png" alt="">  </p>
+<h3 id="Java中的HashMap"><a href="#Java中的HashMap" class="headerlink" title="Java中的HashMap"></a>Java中的HashMap</h3><p>基本认识：基于Map接口,<em>允许null键/值,非同步,不保证有序</em>,也不保证顺序不随时间变化。<br>HashMap中和Map一样，键值对都是保存在一个内部类中的,而在HashMap类中有一个很重要的字段，那就是Node[] table，即是一个哈希桶数组。Node是HashMap的一个内部类，实现了Map.Entry接口，本质是就是一个映射(键值对)。  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</div><div class="line">        <span class="keyword">final</span> <span class="keyword">int</span> hash;    <span class="comment">//用来定位数组索引位置</span></div><div class="line">        <span class="keyword">final</span> K key;</div><div class="line">        V value;</div><div class="line">        Node&lt;K,V&gt; next;   <span class="comment">//链表的下一个node</span></div><div class="line"></div><div class="line">        Node(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; next) &#123; ... &#125;</div><div class="line">       /.../</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<a id="more"></a> 
+<p>还有两个重要参数:  </p>
+<ul>
+<li>容量(Capacity)：Capacity就是bucket的大小</li>
+<li>负载因子(Load factor)：Load factor就是bucket填满程度的最大比例。<br>如果对迭代性能要求很高的话不要把<code>capacity</code>设置过大,也不要吧<code>load factor</code>设置过小，当bucket的entries的数目大于<code>capacity*load factor</code>是就需要调整bucket的大小为当前的2倍。<h4 id="put-函数的基本思路"><a href="#put-函数的基本思路" class="headerlink" title="put()函数的基本思路:"></a><code>put()</code>函数的基本思路:</h4></li>
+</ul>
+<ol>
+<li>对key的<code>hashCode()</code>做hash,然后计算对应的index</li>
+<li>如果没有发生碰撞就直接放到桶里</li>
+<li>如果发生碰撞就采用拉链法,以链表的形式存储在该桶里</li>
+<li>如果碰撞导致链表过长(大于等于TREEIFY_THRESHOLD),就把链表转换为红黑树</li>
+<li>如果节点存在,就替换成新的value</li>
+<li>如果桶满了(超过load factor*current capacity),就要resize  </li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> V <span class="title">put</span><span class="params">(K key, V value)</span></span>&#123;</div><div class="line">	<span class="keyword">return</span> putVal(hash(key),key,value,<span class="keyword">false</span>,<span class="keyword">true</span>);</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">final</span> V <span class="title">putVal</span><span class="params">(<span class="keyword">int</span> hash,K key,V value,<span class="keyword">boolean</span> onlyIfAbsent,<span class="keyword">boolean</span> evict)</span></span></div><div class="line">&#123;</div><div class="line">Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; <span class="keyword">int</span> n, i;</div><div class="line">    <span class="comment">// tab为空则创建</span></div><div class="line">    <span class="keyword">if</span> ((tab = table) == <span class="keyword">null</span> || (n = tab.length) == <span class="number">0</span>)</div><div class="line">        n = (tab = resize()).length;</div><div class="line">    <span class="comment">// 计算index，并对null做处理</span></div><div class="line">    <span class="keyword">if</span> ((p = tab[i = (n - <span class="number">1</span>) &amp; hash]) == <span class="keyword">null</span>)</div><div class="line">        tab[i] = newNode(hash, key, value, <span class="keyword">null</span>);</div><div class="line">    <span class="keyword">else</span> &#123;</div><div class="line">        Node&lt;K,V&gt; e; K k;</div><div class="line">        <span class="comment">// 节点存在</span></div><div class="line">        <span class="keyword">if</span> (p.hash == hash &amp;&amp;</div><div class="line">            ((k = p.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</div><div class="line">            e = p;</div><div class="line">        <span class="comment">// 该链为树</span></div><div class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (p <span class="keyword">instanceof</span> TreeNode)</div><div class="line">            e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(<span class="keyword">this</span>, tab, hash, key, value);</div><div class="line">        <span class="comment">// 该链为链表</span></div><div class="line">        <span class="keyword">else</span> &#123;</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> binCount = <span class="number">0</span>; ; ++binCount) &#123;</div><div class="line">                <span class="keyword">if</span> ((e = p.next) == <span class="keyword">null</span>) &#123;</div><div class="line">                    p.next = newNode(hash, key, value, <span class="keyword">null</span>);</div><div class="line">                    <span class="keyword">if</span> (binCount &gt;= TREEIFY_THRESHOLD - <span class="number">1</span>) <span class="comment">// -1 for 1st</span></div><div class="line">                        treeifyBin(tab, hash);</div><div class="line">                    <span class="keyword">break</span>;</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">if</span> (e.hash == hash &amp;&amp;</div><div class="line">                    ((k = e.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</div><div class="line">                    <span class="keyword">break</span>;</div><div class="line">                p = e;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="comment">// 写入</span></div><div class="line">        <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123; <span class="comment">// existing mapping for key</span></div><div class="line">            V oldValue = e.value;</div><div class="line">            <span class="keyword">if</span> (!onlyIfAbsent || oldValue == <span class="keyword">null</span>)</div><div class="line">                e.value = value;</div><div class="line">            afterNodeAccess(e);</div><div class="line">            <span class="keyword">return</span> oldValue;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    ++modCount;</div><div class="line">    <span class="comment">// 超过load factor*current capacity，resize</span></div><div class="line">    <span class="keyword">if</span> (++size &gt; threshold)</div><div class="line">        resize();</div><div class="line">    afterNodeInsertion(evict);</div><div class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="get-函数的基本思路"><a href="#get-函数的基本思路" class="headerlink" title="get()函数的基本思路"></a><code>get()</code>函数的基本思路</h4><ol>
+<li>桶里的第一个节点就直接命中</li>
+<li>如果桶里有冲突，就通过<code>equal()</code>来找查对应的entry，若为树时间复杂度为O(logN)，链表就是O(N)   </li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">(Object key)</span> </span>&#123;</div><div class="line">        Node&lt;K,V&gt; e;</div><div class="line">        <span class="keyword">return</span> (e = getNode(hash(key), key)) == <span class="keyword">null</span> ? <span class="keyword">null</span> : e.value;</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">final</span> Node&lt;K,V&gt; <span class="title">getNode</span><span class="params">(<span class="keyword">int</span> hash, Object key)</span> </span>&#123;</div><div class="line">        Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; first, e; <span class="keyword">int</span> n; K k;</div><div class="line">        <span class="keyword">if</span> ((tab = table) != <span class="keyword">null</span> &amp;&amp; (n = tab.length) &gt; <span class="number">0</span> &amp;&amp;</div><div class="line">            (first = tab[(n - <span class="number">1</span>) &amp; hash]) != <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="comment">// 直接命中</span></div><div class="line">            <span class="keyword">if</span> (first.hash == hash &amp;&amp; <span class="comment">// always check first node</span></div><div class="line">                ((k = first.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</div><div class="line">                <span class="keyword">return</span> first;</div><div class="line">            <span class="comment">// 未命中</span></div><div class="line">            <span class="keyword">if</span> ((e = first.next) != <span class="keyword">null</span>) &#123;</div><div class="line">                <span class="comment">// 在树中get</span></div><div class="line">                <span class="keyword">if</span> (first <span class="keyword">instanceof</span> TreeNode)</div><div class="line">                    <span class="keyword">return</span> ((TreeNode&lt;K,V&gt;)first).getTreeNode(hash, key);</div><div class="line">                <span class="comment">// 在链表中get</span></div><div class="line">                <span class="keyword">do</span> &#123;</div><div class="line">                    <span class="keyword">if</span> (e.hash == hash &amp;&amp;</div><div class="line">                        ((k = e.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</div><div class="line">                        <span class="keyword">return</span> e;</div><div class="line">                &#125; <span class="keyword">while</span> ((e = e.next) != <span class="keyword">null</span>);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>注意:通过hash的方法，通过put和get存储和获取对象。存储对象时，我们将<code>K/V</code>传给put方法时,它调用hashCode计算hash从而得到bucket位置,进一步存储，<code>HashMap</code>会根据当前bucket的占用情况自动调整容量(超过Load Facotr则resize为原来的2倍)。获取对象时,我们将K传给get,它调用hashCode计算hash从而得到bucket位置,并进一步调用equals()方法确定键值对。如果发生碰撞的时候，HashMap通过链表将产生碰撞冲突的元素组织起来,在Java 8中,如果一个bucket中碰撞冲突的元素超过某个限制(默认是8,则使用红黑树来替换链表,从而提高速度 </p>
+<h3 id="golang中的map"><a href="#golang中的map" class="headerlink" title="golang中的map"></a>golang中的map</h3><p>基本认识:在go中一个map就是一个哈希表的引用,map类型可以写为map[K]V,对K的类型要求是必须支持<code>==</code>比较运算符。但是不建议使用浮点型作为Key。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> Hmap&#123;<span class="comment">//map的关键数据</span></div><div class="line">    <span class="keyword">uint8</span>   B;    <span class="comment">// 可以容纳2^B个项</span></div><div class="line">    <span class="keyword">uint16</span>  bucketsize;   <span class="comment">// 每个桶的大小</span></div><div class="line">    ....</div><div class="line">    <span class="keyword">byte</span>    *buckets;     <span class="comment">// 2^B个Buckets的数组</span></div><div class="line">    <span class="keyword">byte</span>    *oldbuckets;  <span class="comment">// 前一个buckets，只有当正在扩容时才不为空</span></div><div class="line">&#125;;</div><div class="line"><span class="comment">//初始化的3种方式</span></div><div class="line">ages:=<span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span>)<span class="comment">// mapping from strings to ints</span></div><div class="line">ages:=<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span>&#123;&#125;</div><div class="line">ages:=<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span>&#123;</div><div class="line">    <span class="string">"alice"</span>:<span class="number">0</span>,</div><div class="line">    <span class="string">"charlie"</span>:<span class="number">33</span>,</div><div class="line">&#125;</div><div class="line"><span class="comment">//取值</span></div><div class="line">ages[<span class="string">"alice"</span>]=<span class="number">0</span></div><div class="line"><span class="comment">//赋值</span></div><div class="line">ages[<span class="string">"charlie"</span>]=<span class="number">34</span></div><div class="line"><span class="comment">//删除</span></div><div class="line"><span class="built_in">delete</span>(ages, <span class="string">"alice"</span>) <span class="comment">// remove element ages["alice"]</span></div></pre></td></tr></table></figure>
+<p>上面这些都是安全的，及时失败也会返回对应value类型的零值。<br>但是有时候需要想知道对应的元素是否真的在map之中。推荐写法：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//map的下标语法将产生两个值；第二个是一个布尔值   </span></div><div class="line"><span class="comment">//用于报告元素是否真的存在。布尔变量一般命名为ok，特别适合马上用于if条件判断部分。</span></div><div class="line"><span class="keyword">if</span> age, ok := ages[<span class="string">"alice"</span>]; !ok &#123; <span class="comment">/* ... */</span> &#125;</div></pre></td></tr></table></figure>
+<h4 id="扩容"><a href="#扩容" class="headerlink" title="扩容"></a>扩容</h4><p>在golang中主要采用增量扩容–扩容因子为<code>6.5</code>。这个主要是为了缩短map容器的响应时间，因为在map桶里面数据很多事,直接复制进行扩容就会很卡，导致较长一段时间无法响应请求。不过具体时间复杂度还是采用的均摊法。具体做法:</p>
+<blockquote>
+<p>扩容会建立一个大小是原来2倍的空表。将旧的bucket搬到新表中(复制),但是并不会将旧的bucket从oldbucket中删除，而是加上一个已删除的标记。</p>
+</blockquote>
+<p>由于整个过程是逐渐完成的,这样就会导致一部分数据还没有完全复制到新表，所以会对insert，remove，get等操作产生影响。并且只有当所有复制操作完成后才会释放oldbucket。  </p>
+<h4 id="insert分析基本思路"><a href="#insert分析基本思路" class="headerlink" title="insert分析基本思路"></a><code>insert</code>分析基本思路</h4><ol>
+<li>根据key算出hash值，进而得出索引的位置</li>
+<li>如果bucket的位置在old table中，就重新hash到新表中</li>
+<li>查找对应的位置，如果在bucket中如果已经存在相应的key，就覆盖原来value，没有就插入</li>
+<li>根据table中元素的个数，判断是否扩容</li>
+<li>如果对应的bucket已经full，重新申请新的bucket作为overbucket(溢出桶链表)。</li>
+<li>将key/value pair插入到bucket中。  </li>
+</ol>
+<h4 id="get查找过程"><a href="#get查找过程" class="headerlink" title="get查找过程"></a><code>get</code>查找过程</h4><ol>
+<li>根据key算出hash值，进而得出索引的位置</li>
+<li>如果存在old table, 首先在old table中查找，如果找到的bucket已经扩容，转到步骤3。 反之，返回其对应的value。</li>
+<li>在new table中查找对应的value。  </li>
+</ol>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">do &#123; <span class="comment">//对每个bucket</span></div><div class="line">    <span class="comment">//依次比较桶内的每一项存放的高位hash与所求的hash值高位是否相等</span></div><div class="line">    <span class="keyword">for</span>(i = <span class="number">0</span>, k = b-&gt;data, v = k + h-&gt;keysize * BUCKETSIZE; i &lt; BUCKETSIZE; i++, k += h-&gt;keysize, v += h-&gt;valuesize) &#123;</div><div class="line">        <span class="keyword">if</span>(b-&gt;tophash[i] == top) &#123; </div><div class="line">            k2 = IK(h, k);</div><div class="line">            t-&gt;key-&gt;alg-&gt;equal(&amp;eq, t-&gt;key-&gt;size, key, k2);</div><div class="line">            <span class="keyword">if</span>(eq) &#123; <span class="comment">//相等的情况下再去做key比较...</span></div><div class="line">                *keyp = k2;</div><div class="line">                <span class="keyword">return</span> IV(h, v);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    b = b-&gt;overflow; <span class="comment">//b设置为它的下一下溢出链</span></div><div class="line">&#125; while(b != <span class="literal">nil</span>);</div></pre></td></tr></table></figure>
+<p>这里一个细节需要注意一下。不认真看可能会以为低位用于定位bucket在数组的index，那么高位就是用于key/valule在bucket内部的offset。事实上高8位不是用作offset的，而是用于加快key的比较的。  </p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>在扩容过程中，oldbucket是被冻结的，查找时会在oldbucket中查找，但不会在oldbucket中插入数据。如果在oldbucket是找到了相应的key，做法是将它迁移到新bucket后加入扩容标记。<br>然后就是只要在某个bucket中找到第一个空位，就会将key/value插入到这个位置。也就是位置位于bucket前面的会覆盖后面的(类似于存储系统设计中做删除时的常用的技巧之一，直接用新数据追加方式写，新版本数据覆盖老版本数据)。找到了相同的key或者找到第一个空位就可以结束遍历了。不过这也意味着做删除时必须完全的遍历bucket所有溢出链，将所有的相同key数据都删除。所以目前map的设计是为插入而优化的，删除效率会比插入低一些。  </p>
+<hr>
+<p>参考:<br><a href="http://tech.meituan.com/java-hashmap.html" target="_blank" rel="external">Java 8系列之重新认识HashMap</a><br><a href="http://yikun.github.io/2015/04/01/Java-HashMap%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%8F%8A%E5%AE%9E%E7%8E%B0/" target="_blank" rel="external">Java HashMap工作原理及实现</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Java和golang/">Java和golang</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Java/">Java</a><a href="/tags/golang/">golang</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2016/12/05/Java里的hasMap和golang里的map/" data-title="Java里的HashMap和golang里的map | Fluge" data-tsina="undefined" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/12/12/ICMP协议和UDP协议/" title="ICMP协议和UDP协议">
+  <strong>上一篇：</strong><br/>
+  <span>
+  ICMP协议和UDP协议</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/11/29/golang的切片和Java的动态数组/"  title="golang的切片和Java的动态数组">
+ <strong>下一篇：</strong><br/> 
+ <span>golang的切片和Java的动态数组
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#哈希表"><span class="toc-number">1.</span> <span class="toc-text">哈希表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Java中的HashMap"><span class="toc-number">2.</span> <span class="toc-text">Java中的HashMap</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#put-函数的基本思路"><span class="toc-number">2.1.</span> <span class="toc-text">put()函数的基本思路:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#get-函数的基本思路"><span class="toc-number">2.2.</span> <span class="toc-text">get()函数的基本思路</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#golang中的map"><span class="toc-number">3.</span> <span class="toc-text">golang中的map</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#扩容"><span class="toc-number">3.1.</span> <span class="toc-text">扩容</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#insert分析基本思路"><span class="toc-number">3.2.</span> <span class="toc-text">insert分析基本思路</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#get查找过程"><span class="toc-number">3.3.</span> <span class="toc-text">get查找过程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#总结"><span class="toc-number">3.4.</span> <span class="toc-text">总结</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="https://github.com/fluge" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Java/" title="Java">Java<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java和golang/" title="Java和golang">Java和golang<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/TCP-IP/" title="TCP/IP">TCP/IP<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Web/" title="Web">Web<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/essay/" title="essay">essay<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/web/" title="web">web<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/TCP/" title="TCP">TCP<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/golang/" title="golang">golang<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ICMP/" title="ICMP">ICMP<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/UDP/" title="UDP">UDP<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ip/" title="ip">ip<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/session/" title="session">session<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/cookie/" title="cookie">cookie<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/start/" title="start">start<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/cros/" title="cros">cros<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://coderq.com" target="_blank" title="一个面向程序员交流分享的新一代社区">码农圈</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://wuchong.me" target="_blank" title="Jark&#39;s Blog">Jark&#39;s Blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 前行路上是唯有坚持. <br/>
+			坚持是最难的.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/https://github.com/fluge" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:lyfluge@outlook.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2017 
+		
+		<a href="/about" target="_blank" title="fluge">fluge</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

@@ -1,0 +1,1012 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Fluge</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="fluge">
+    
+
+    
+    <meta name="description" content="积累漫长而艰辛，coding....。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Fluge">
+<meta property="og:url" content="http://yoursite.com/index.html">
+<meta property="og:site_name" content="Fluge">
+<meta property="og:description" content="积累漫长而艰辛，coding....。">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Fluge">
+<meta name="twitter:description" content="积累漫长而艰辛，coding....。">
+
+    
+    
+    <link rel="icon" href="/img/fluge.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/fluge.png" alt="Fluge" title="Fluge"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Fluge">Fluge</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main">
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/02/08/我理解的TCP协议(二)---重传/" title="我理解的TCP协议(二)---重传" itemprop="url">我理解的TCP协议(二)---重传</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="fluge" target="_blank" itemprop="author">fluge</a>
+		
+  <p class="article-time">
+    <time datetime="2017-02-08T09:54:51.000Z" itemprop="datePublished"> Published 2017-02-08</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <p><a href="http://coolshell.cn/articles/11564.html">原文</a><br>TCP的可靠性不止建立在建立一个稳固的链接上，还有就是数据包丢失的重传机制,和防止网络波动的拥塞处理机制,这些都是慢慢发展而来的。<br>要先了解TCP的重传和拥塞处理,需要先了解两个很常见的变量–RTT和RTO,这两个是对重传和拥塞很重要的概念。</p>
+<blockquote>
+<p>RTT(Round Trip Time):就是发送一个数据包的往返时间的测量,由于路由器和网络流量均会变化，因此我们认为这个时间可能经常会发生变化，TCP应该跟踪这些变化并相应地改变其超时时间。<br>RTO(Retransmission TimeOut):重传超时时间,是根据RTT计算得到的。   </p>
+</blockquote>
+<h3 id="重传"><a href="#重传" class="headerlink" title="重传"></a>重传</h3><p>在重传机制中，首先在介绍重传的几个机制前，要注意。接收端给发送端的Ack确认只会确认最后一个连续的包,比如,发送端发了1,2,3,4,5一共五份数据，接收端收到了1,2,于是回ack 3,然后收到了4(注意此时3没收到，3丢失)此时的TCP会怎么办?我们要知道,因为正如前面所说的,<code>SeqNum和Ack是以字节数为单位,所以ack的时候,不能跳着确认,只能确认最大的连续收到的包</code>,不然,发送端就以为之前的都收到了。<br>
+        
+        
+        <p class="article-more-link">
+          
+            <a href="/2017/02/08/我理解的TCP协议(二)---重传/#more">Read More</a>
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/TCP-IP/">TCP/IP</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/TCP/">TCP</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/01/18/并发系列(一) Java7的ConcurrentHashMap/" title="并发系列(一) Java7的ConcurrentHashMap" itemprop="url">并发系列(一) Java7的ConcurrentHashMap</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="fluge" target="_blank" itemprop="author">fluge</a>
+		
+  <p class="article-time">
+    <time datetime="2017-01-18T10:30:18.000Z" itemprop="datePublished"> Published 2017-01-18</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <p>从<a href="https://fluge.github.io/2016/12/15/HashMap%E5%B9%B6%E5%8F%91%E7%9A%84%E6%AD%BB%E5%BE%AA%E7%8E%AF/">HashMap并发的死循环</a>可以知道,Hashmap是没办法在多线程的情况下使用的，为了解决这个问题，在Java4之前用的是hashtable,只是现在不推荐的。在Java5之后就比较推荐使用java.util.concurrent.ConcurrentHashMap，这个在多线程的情况下，也能有很好的性能。从这里引入了Java里面一类很重要的概念—并发。先解决完上一个问题。高并发下ConcurrentHashMap的结构。</p>
+<h3 id="并发的一些初步了解–synchronized和volatile"><a href="#并发的一些初步了解–synchronized和volatile" class="headerlink" title="并发的一些初步了解–synchronized和volatile"></a>并发的一些初步了解–synchronized和volatile</h3><p>在多线程的并发的情况下有安全的访问变量，为了解决这个问题引入一个机制—锁机制。让多线程不能同时访问一个共享变量。在并发过程中有需要简单的了解两个东西的含义。</p>
+<h4 id="Java中的synchronized的简单分析"><a href="#Java中的synchronized的简单分析" class="headerlink" title="Java中的synchronized的简单分析"></a>Java中的synchronized的简单分析</h4><p><code>synchronized</code>的用法要弄清晰一个问题:<code>synchronized</code>锁住的是代码还是对象？<br>首先是一个被<code>synchronized</code>修饰的代码块<br>
+        
+        
+        <p class="article-more-link">
+          
+            <a href="/2017/01/18/并发系列(一) Java7的ConcurrentHashMap/#more">Read More</a>
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Java/">Java</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Java/">Java</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/01/06/我理解的TCP协议(一)---链接的建立和终止/" title="我理解的TCP协议(一)---链接的建立和终止" itemprop="url">我理解的TCP协议(一)---链接的建立和终止</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="fluge" target="_blank" itemprop="author">fluge</a>
+		
+  <p class="article-time">
+    <time datetime="2017-01-06T02:21:17.000Z" itemprop="datePublished"> Published 2017-01-06</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <p>TCP是一个非常复杂的面向连接的协议,在很30多年来，各种优化变种争论和修改不断,所以我先从连接的建立和终止开始写TCP。后面应该还有几篇文章写TCP的另外几个特别重要的特性。<br>TCP最开始被我知道就先从很有特点的链接建立和终止—三次握手和四次挥手,基本上TCP协议的可靠性就是从保证连接的可靠性开始的。  </p>
+<h3 id="TCP链接的建立—三次握手"><a href="#TCP链接的建立—三次握手" class="headerlink" title="TCP链接的建立—三次握手"></a>TCP链接的建立—三次握手</h3><p>对于三次握手，其实是TCP比较著名的东西了,在完全不了解这个TCP的时候就知道有这个东西了，但是开始的时候总有一点让我非常的疑惑:TCP为什么是三次握手,为什么不是两次或四次？  </p>
+<h4 id="TCP-为什么是三次握手-为什么不是两次或四次？"><a href="#TCP-为什么是三次握手-为什么不是两次或四次？" class="headerlink" title="TCP 为什么是三次握手,为什么不是两次或四次？"></a>TCP 为什么是三次握手,为什么不是两次或四次？</h4><p>要解释这个问题,首先明白TCP出现的价值和思路:是<code>为了在不可靠的互联网络上提供一个可靠的端到端字节流而设计的</code>,<code>并且一个TCP连接是全双工</code>。这是TCP很重要的一个设计理念:提供了一种<code>可靠的``面向连接的</code>字节流运输层服务,并且是双全工的。这里需要理解双全工的意思：就是两端之间进行通信，这两端既可以是数据的接收方，也可以是数据的发送方。<br>1、 可靠模型:但是为了数据的安全送达，就必须在发送数据前向另一个端口进行通信</p>
+<blockquote>
+<p>数据发送端A:嘿,我想发送数据了,可以么。<br>数据接收端B:好的，这边允许接受。  </p>
+</blockquote>
+<p>然后数据的发送端就可以发送数据了,这里就基本保证你发的在接收方会正常的接受并不会发错。这是发送数据的<code>基本可靠模型</code>。<br>2、 连接模型:在TCP的要求中,需要一种面向连接的通信:<code>连接</code>在我理解中就是相当于有一根空水管,连接两个水池(为两个水池传输东西),在水管中传输东西的效率肯定会高于用桶去一桶桶的装,来的方便。<br>
+        
+        
+        <p class="article-more-link">
+          
+            <a href="/2017/01/06/我理解的TCP协议(一)---链接的建立和终止/#more">Read More</a>
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/TCP-IP/">TCP/IP</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/TCP/">TCP</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/12/22/session和cookie/" title="session和cookie" itemprop="url">session和cookie</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="fluge" target="_blank" itemprop="author">fluge</a>
+		
+  <p class="article-time">
+    <time datetime="2016-12-22T10:35:35.000Z" itemprop="datePublished"> Published 2016-12-22</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h3 id="基本认识"><a href="#基本认识" class="headerlink" title="基本认识"></a>基本认识</h3><p>首先有一点必须特别的清楚： 因为HTTP协议是无状态的，客户每次读取web页面时，服务器都打开新的会话，而且服务器也不会自动维护客户的上下文信息，对于一个浏览器发出的多次请求，WEB服务器无法区分 是不是来源于同一个浏览器，更别说是否是来自同一用户。为了保持用户的状态，有了两种机制，一般用户客户端的cookie机制，和用于服务器端的session机制，这两种机制都是为了保持状态，既有联系又有区别。</p>
+<h3 id="cookie基本实现机制"><a href="#cookie基本实现机制" class="headerlink" title="cookie基本实现机制"></a>cookie基本实现机制</h3><p>现在的cookie是HTTP协议的一部分，一般存在HTTP的响应头，内容是一系列的键值对的形式，简单说：cookie就是服务器在用户的浏览器中存储的一小段文本文件（大小不能超过3K）不包含任何可执行代码，里面一般包含的是用户的登录信息之类的比较少的，用来验证用户是否合法（不止局限与此，cookie是用来记录状态的，也可以是购物的等一系列状态，让服务器知道我们浏览了那些地方，购物对那些感兴趣，一般很多广告都是根据这个东西来推送的，你在某购物网站买了一个东西，然后浏览别的网站，发现广告都是和你浏览的相关）。  cookie的内容主要包括：key-value,Expires（过期时间），path和domain。path和domain一起构成cookie的作用范围。<br><img src="http://ofa8x9gy9.bkt.clouddn.com/cookie.png" alt=""><br>&emsp;&emsp;&emsp;&emsp;现在的cookie，内容经过加密了<br>cookie的实现流程：  </p>
+<ol>
+<li>浏览器向某个URL发起HTTP请求 （可以是任何请求，比如GET，POST等）</li>
+<li>对应的服务器收到该HTTP请求，并做相应的响应（响应头和请求体两部分），在响应的头中加入<code>Set-Cookie</code>字段（设置相应的cookie，cookie是多个<code>key-value</code>组成的）
+        
+        
+        <p class="article-more-link">
+          
+            <a href="/2016/12/22/session和cookie/#more">Read More</a>
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/web/">web</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/session/">session</a><a href="/tags/cookie/">cookie</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/12/15/HashMap并发的死循环/" title="HashMap的并发死循环" itemprop="url">HashMap的并发死循环</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="fluge" target="_blank" itemprop="author">fluge</a>
+		
+  <p class="article-time">
+    <time datetime="2016-12-15T09:52:18.000Z" itemprop="datePublished"> Published 2016-12-15</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <p>HashMap从设计上来说就不适合在并发的情况的下使用,因为HashMap每次在<code>put()</code>时，总会检查一遍对应桶的容量，如果桶满了，或者超过了设定的值，就会<code>reserve()</code>来进行扩容,然后通过<code>get()</code>来取出相应的值。这个过程在单线程下是没什么问题的，但是如果在并发的条件下，多个线程同时reserve桶，然后有线程这个时候执行<code>get()</code>就有可能产生死循环，造成CPU的100%占用，具体等会看源码。在Java里面有一个很老的hashtable就是加了锁的HashMap。现在Java中多线程里一般使用ConcurrentHashMap，至于为什么。会在下一篇博文里分析。</p>
+<h3 id="HashMap的rehash源代码"><a href="#HashMap的rehash源代码" class="headerlink" title="HashMap的rehash源代码"></a>HashMap的rehash源代码</h3><p><code>put()</code>方法的Java8源码分析看我的<a href="https://fluge.github.io/2016/12/05/Java%E9%87%8C%E7%9A%84hasMap%E5%92%8Cgolang%E9%87%8C%E7%9A%84map/">Java里的hashMap和golang里的map</a>，在Java8中优化了扩容的hash算法，更加高效。在这分析死循环用的是Java7的源码。更加清晰点。<br>
+        
+        
+        <p class="article-more-link">
+          
+            <a href="/2016/12/15/HashMap并发的死循环/#more">Read More</a>
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Java/">Java</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Java/">Java</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/12/14/跨域/" title="跨域" itemprop="url">跨域</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="fluge" target="_blank" itemprop="author">fluge</a>
+		
+  <p class="article-time">
+    <time datetime="2016-12-14T13:05:01.000Z" itemprop="datePublished"> Published 2016-12-14</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h3 id="同源策略"><a href="#同源策略" class="headerlink" title="同源策略"></a>同源策略</h3><p>这套安全策略由Netscape提出，并延续至今。它规定：JavaScript脚本只能访问与其同一来源的资源(现在很多资源是通过ajax发起异步请求来获取的，如果没有跨域这个是禁止的)。<br>所谓同源是指，域名，协议，端口相同。不同源的客户端脚本(javascript、ActionScript)在没明确授权的情况下，不能读写对方的资源。严格隔离不相关的网站提供的内容，防止客户端数据机密性或完整性丢失。<br>假设你已经成功登录Gmail服务器，同时在同一个浏览器访问恶意站点（另一个浏览器选项卡）。没有同源策略，攻击者可以通过JavaScript获取你的用户信息，你的邮件以及其他敏感信息，比如说阅读你的私密邮件，发送虚假邮件，看你的聊天记录等等。假如把这个换成银行账户，那就很恐怖了。<br>可以说同源策略是现如今浏览器安全的基石。但是如果不能突破同源策略，把所有的资源放在同一服务器下，现在看来是不现实，必须有一中方式去平衡这种安全和便捷的机制–跨域。现在一般的跨域使用的是CORS(基本所有浏览器支持)和JSONP(一些比较的老的应用使用)。  </p>
+<h3 id="CROS跨域"><a href="#CROS跨域" class="headerlink" title="CROS跨域"></a>CROS跨域</h3><p>CORS是一个W3C标准，全称是”跨域资源共享”(Cross-origin resource sharing)。它允许浏览器向跨源服务器,发出XMLHttpRequest请求，从而克服了AJAX只能同源使用的限制。<br>简单说一下我对CROS的理解。就相当于我想跟一个邻居借东西(浏览器向服务器发送跨域请求)。我首先要去敲门，然后就是几种情况，一种是邻居家里你敲门没有反应(服务器端没有设置跨域)，你跟不知道邻居家里的具体情况，借东西肯定是失败的。一种是邻居进行了应答，但是告诉你我跟你不熟，不借东西给你。另外一种就是邻居进行了应答，并借给你东西。<br>
+        
+        
+        <p class="article-more-link">
+          
+            <a href="/2016/12/14/跨域/#more">Read More</a>
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Web/">Web</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/cros/">cros</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/12/12/ICMP协议和UDP协议/" title="ICMP协议和UDP协议" itemprop="url">ICMP协议和UDP协议</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="fluge" target="_blank" itemprop="author">fluge</a>
+		
+  <p class="article-time">
+    <time datetime="2016-12-12T14:46:51.000Z" itemprop="datePublished"> Published 2016-12-12</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h3 id="ICMP网络控制报文协议"><a href="#ICMP网络控制报文协议" class="headerlink" title="ICMP网络控制报文协议"></a>ICMP网络控制报文协议</h3><p>ICMP经常被认为是IP层的一个组成部分,它传递差错报文以及其他需要注意的信息。ICMP报文通常被IP层或更高层协议（UDP,TCP）使用。ICMP报文是在IP数据报内部传输的。由于IP是不可靠的协议，不能保证IP数据报能够成功到达目的主机，无法进行差错控制。但是这些信息会由ICMP将错误信息封包，然后传递给主机，让主机有处理错误的机会。<br><img src="http://ofa8x9gy9.bkt.clouddn.com/ICMP%E5%8D%8F%E8%AE%AE%E6%A0%BC%E5%BC%8F.png" alt=""><br>ICMP数据报由8bit的错误类型和8bit的代码（表示制定类型中的一个功能，如果只有一个功能，代码就置0）以及16bit的校验和组成，检验和字段覆盖整个ICMP报文。<br>ICMP报文大致可以分为：差错报文和查询报文。因为对ICMP的差错报文需要做一些特殊响应，需要进行区分。比如在对差错报文进行响应的时候，永远不会产生另一个ICMP差错报文，防止不断的产生差错一直循环。同时一下几种情况也不会产生ICMP差错报文：</p>
+<ol>
+<li>ICMP差错报文不会产生</li>
+<li>目的地址是广播地址或多播地址的IP数据报</li>
+<li>作为链路层广播的数据报</li>
+<li>不是IP分片的第一片</li>
+<li>源地址不是单个主机的数据报
+        
+        
+        <p class="article-more-link">
+          
+            <a href="/2016/12/12/ICMP协议和UDP协议/#more">Read More</a>
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/TCP-IP/">TCP/IP</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/ICMP/">ICMP</a><a href="/tags/UDP/">UDP</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/12/05/Java里的hasMap和golang里的map/" title="Java里的HashMap和golang里的map" itemprop="url">Java里的HashMap和golang里的map</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="fluge" target="_blank" itemprop="author">fluge</a>
+		
+  <p class="article-time">
+    <time datetime="2016-12-05T06:29:56.000Z" itemprop="datePublished"> Published 2016-12-05</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h3 id="哈希表"><a href="#哈希表" class="headerlink" title="哈希表"></a>哈希表</h3><p>哈希表就是一种以<code>键-值(key-value)</code>存储数据的结构,我们只要输入待查找的键即Key,即可找到对应的值。<br>使用哈希找查有两个步骤:</p>
+<ol>
+<li>使用哈希函数将被找查的键转换为数组的索引.在理想的情况下,不同的键会被装换为不同的索引值,但是在有些情况下我们需要处理多个键被哈希到同一个索引值得情况。所以哈希查找的第二个步骤是处理冲突。</li>
+<li>处理哈希碰撞冲突。一般处理哈希碰撞用拉链法和开放寻址法等方法。<blockquote>
+<p>开放地址法:当发生地址冲突时，按照某种方法继续探测哈希表中的其他存储单元，直到找到空位置为止。<br>拉链法:当通过哈希函数把键转换为数组的索引时,如果索引重复,就在该位置用链表顺序 存储该键值对。  </p>
+</blockquote>
+</li>
+</ol>
+<p><img src="http://ofa8x9gy9.bkt.clouddn.com/%E6%8B%89%E9%93%BE%E6%B3%95.png" alt="">  </p>
+<h3 id="Java中的HashMap"><a href="#Java中的HashMap" class="headerlink" title="Java中的HashMap"></a>Java中的HashMap</h3><p>基本认识：基于Map接口,<em>允许null键/值,非同步,不保证有序</em>,也不保证顺序不随时间变化。<br>HashMap中和Map一样，键值对都是保存在一个内部类中的,而在HashMap类中有一个很重要的字段，那就是Node[] table，即是一个哈希桶数组。Node是HashMap的一个内部类，实现了Map.Entry接口，本质是就是一个映射(键值对)。  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</div><div class="line">        <span class="keyword">final</span> <span class="keyword">int</span> hash;    <span class="comment">//用来定位数组索引位置</span></div><div class="line">        <span class="keyword">final</span> K key;</div><div class="line">        V value;</div><div class="line">        Node&lt;K,V&gt; next;   <span class="comment">//链表的下一个node</span></div><div class="line"></div><div class="line">        Node(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; next) &#123; ... &#125;</div><div class="line">       /.../</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+        
+        
+        <p class="article-more-link">
+          
+            <a href="/2016/12/05/Java里的hasMap和golang里的map/#more">Read More</a>
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Java和golang/">Java和golang</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Java/">Java</a><a href="/tags/golang/">golang</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/11/29/golang的切片和Java的动态数组/" title="golang的切片和Java的动态数组" itemprop="url">golang的切片和Java的动态数组</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="fluge" target="_blank" itemprop="author">fluge</a>
+		
+  <p class="article-time">
+    <time datetime="2016-11-29T09:44:44.000Z" itemprop="datePublished"> Published 2016-11-29</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h3 id="Java里的动态数组—ArrayList"><a href="#Java里的动态数组—ArrayList" class="headerlink" title="Java里的动态数组—ArrayList"></a>Java里的动态数组—ArrayList</h3><p>ArrayList是实现List接口的动态数组，每个ArrayList实例都有一个容量，该容量是指用来存储列表元素的数组的大小。随着向ArrayList中不断添加元素，容量会自动增长，自动增长会带来数据向新数组的<em>重新拷贝</em>。同时需要注意的是这个实现不是同步的。如果多个线程同时访问一个ArrayList实例，而其中至少一个线程从结构上修改了列表，那么它必须保持外部同步。(结构上的修改是指任何添加或删除一个或多个元素的的操作，或者显示调整底层数组的大小；仅仅设置元素的值不是结构上的修改)<br>
+        
+        
+        <p class="article-more-link">
+          
+            <a href="/2016/11/29/golang的切片和Java的动态数组/#more">Read More</a>
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Java和golang/">Java和golang</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Java/">Java</a><a href="/tags/golang/">golang</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/11/28/IP初识/" title="IP初识" itemprop="url">IP初识</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="fluge" target="_blank" itemprop="author">fluge</a>
+		
+  <p class="article-time">
+    <time datetime="2016-11-28T06:18:00.000Z" itemprop="datePublished"> Published 2016-11-28</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h3 id="基本认识"><a href="#基本认识" class="headerlink" title="基本认识"></a>基本认识</h3><p>&emsp;最近一次接触ip是在我读《TCP/IP详解》时读到了，其实我感觉这些基础对理解整个互联网的结构都有一些很好的认识，在TCP/IP的协议簇中，首先简单的说一下在TCP中分层：  </p>
+<ul>
+<li>数据链路层:一般都是物理设备驱动程序和接口</li>
+<li>网络层:处理分组在网络中的活动，如分组选路。TCP/IP中,IP协议,ICMP协议,IGMP协议</li>
+<li>运输层:主要为应用程序提供端到端的通信，主要包括两种协议:TCP(高可靠的)、UDP(不可靠的，效率高的)</li>
+<li>应用层:负责处理特定的应用程序的细节<br><img src="http://ofa8x9gy9.bkt.clouddn.com/TCP:IP%E5%88%86%E5%B1%82.png" alt=""><br>上图是我认为对TCP/IP分层的理解很好的一张图TCP/IP分层和传统的OSI分层不一样。OSI的7层是分的更加详细。对于TCP/IP的协议簇重点关注的还是网络层，运输层。
+        
+        
+        <p class="article-more-link">
+          
+            <a href="/2016/11/28/IP初识/#more">Read More</a>
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/TCP-IP/">TCP/IP</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/ip/">ip</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+
+
+
+
+  <nav id="page-nav" class="clearfix">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next<span></span></a>
+  </nav>
+
+</div>
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="https://github.com/fluge" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Java/" title="Java">Java<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Java和golang/" title="Java和golang">Java和golang<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/TCP-IP/" title="TCP/IP">TCP/IP<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Web/" title="Web">Web<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/essay/" title="essay">essay<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/web/" title="web">web<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Java/" title="Java">Java<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/TCP/" title="TCP">TCP<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/golang/" title="golang">golang<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ICMP/" title="ICMP">ICMP<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/UDP/" title="UDP">UDP<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ip/" title="ip">ip<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/session/" title="session">session<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/cookie/" title="cookie">cookie<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/start/" title="start">start<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/cros/" title="cros">cros<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://coderq.com" target="_blank" title="一个面向程序员交流分享的新一代社区">码农圈</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://wuchong.me" target="_blank" title="Jark&#39;s Blog">Jark&#39;s Blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> 前行路上是唯有坚持. <br/>
+			坚持是最难的.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/https://github.com/fluge" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:lyfluge@outlook.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2017 
+		
+		<a href="/about" target="_blank" title="fluge">fluge</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+ </html>
