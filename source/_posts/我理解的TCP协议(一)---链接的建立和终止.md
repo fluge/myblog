@@ -56,7 +56,7 @@ TCP的链接都是通过三次握手和四次挥手建立的，在一般情况�
 长链接的情况比短连接复杂，client和server建立链接后，进行一次通信，在通信完成后，双方都不会发送FIN关闭链接，后续通信也可以继续使用该链接。而且链接的保活一般都是在server端进行的，在不进行通信的时候，server是处于一个半链接的状态，这个时候的server应该通过某种办法去获取client的状态，用来判断这个链接是否该关闭，不然对server资源占用是非常严重的，而且也非常没有必要，这个也叫TCP的保活。
 TCP的保活一般有两种办法:
 1、在应用层建立心跳机制:client在隔一段时间向server发送一次心跳包(一般都是很小的包，或者只包含包头的一个空包)，让server知道此时client的状态，server可以不对心跳包进行处理。
-2、TCP协议的KeepAlive机制：当建立一个TCP连接时设置后keepalive后，就会将一系列的定时器与该连接相关联。这些定时器中某些用于处理keepalive过程。当keepalive定时器变为0时，client会发送一个keepalive 探针包（probe packet）到server，server在收到包后，会回应一个ACK。
+2、TCP协议的`KeepAlive`机制：当建立一个TCP连接时设置后`keepalive`后，就会将一系列的定时器与该连接相关联。这些定时器中某些用于处理keepalive过程。当keepalive定时器变为0时，client会发送一个`keepalive` 探针包（probe packet）到server，server在收到包后，会回应一个ACK。
 
 
 ----  
